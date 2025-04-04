@@ -1,0 +1,1 @@
+ndk.dir=C:\\Users\\alexa\\AppData\\Local\\Android\\sdk\\ndk\\26.3.11579264
