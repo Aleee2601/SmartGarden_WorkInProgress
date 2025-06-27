@@ -1,0 +1,11 @@
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\SmartGardenMVP.exe
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\appsettings.json
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\SmartGardenMVP.dll
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\SmartGardenMVP.deps.json
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\SmartGardenMVP.runtimeconfig.json
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\SmartGardenMVP.pdb
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\Microsoft.OpenApi.dll
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\Proiecte Personale\SmartGarden_Project\MVP\SmartGardenMVP\SmartGardenMVP\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll
