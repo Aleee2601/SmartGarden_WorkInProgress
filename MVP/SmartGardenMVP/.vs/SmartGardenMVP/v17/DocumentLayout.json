@@ -143,7 +143,7 @@
               "RelativeDocumentMoniker": "SmartGardenMVP\\Controllers\\DashboardController.cs",
               "ToolTip": "D:\\Proiecte Personale\\SmartGarden_Project\\MVP\\SmartGardenMVP\\SmartGardenMVP\\Controllers\\DashboardController.cs",
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\DashboardController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAADUAAAAAAAAAAAAQwBQAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-25T19:10:16.528Z",
               "EditorCaption": ""
@@ -151,15 +151,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "SmartGardenMVP",
+              "Title": "SmartGardenMVP.csproj",
               "DocumentMoniker": "D:\\Proiecte Personale\\SmartGarden_Project\\MVP\\SmartGardenMVP\\SmartGardenMVP\\SmartGardenMVP.csproj",
               "RelativeDocumentMoniker": "SmartGardenMVP\\SmartGardenMVP.csproj",
               "ToolTip": "D:\\Proiecte Personale\\SmartGarden_Project\\MVP\\SmartGardenMVP\\SmartGardenMVP\\SmartGardenMVP.csproj",
               "RelativeToolTip": "SmartGardenMVP\\SmartGardenMVP.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-06-25T19:07:07.427Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T19:07:07.427Z"
             },
             {
               "$type": "Document",
@@ -171,8 +170,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\AlertEvent.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T19:06:41.348Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T19:06:41.348Z"
             },
             {
               "$type": "Document",
@@ -184,8 +182,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:37:01.115Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:37:01.115Z"
             },
             {
               "$type": "Document",
@@ -197,8 +194,7 @@
               "RelativeToolTip": "SmartGardenMVP\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-25T18:36:53.234Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:36:53.234Z"
             },
             {
               "$type": "Document",
@@ -210,8 +206,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Data\\SmartGardenContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:35:29.895Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:35:29.895Z"
             },
             {
               "$type": "Document",
@@ -223,8 +218,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\AlertsController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:57:05.174Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:57:05.174Z"
             },
             {
               "$type": "Document",
@@ -236,8 +230,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:59:17.764Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:59:17.764Z"
             },
             {
               "$type": "Document",
@@ -249,8 +242,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Services\\AlertService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:56:46.208Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:56:46.208Z"
             },
             {
               "$type": "Document",
@@ -262,8 +254,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Services\\AuthService.cs",
               "ViewState": "AgIAABEAAAAAAAAAAAAkwEMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:59:04.332Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:59:04.332Z"
             },
             {
               "$type": "Document",
@@ -275,8 +266,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\LoginDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:58:32.835Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:58:32.835Z"
             },
             {
               "$type": "Document",
@@ -288,8 +278,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\RegisterDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:58:22.116Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:58:22.116Z"
             },
             {
               "$type": "Document",
@@ -301,8 +290,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\User.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:57:58.511Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:57:58.511Z"
             },
             {
               "$type": "Document",
@@ -314,8 +302,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\SensorReading.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:46:17.507Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:46:17.507Z"
             },
             {
               "$type": "Document",
@@ -327,8 +314,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\CreatePlantFromTypeDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:48:35.891Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:48:35.891Z"
             },
             {
               "$type": "Document",
@@ -340,8 +326,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\Plant.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:36:17.4Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:36:17.4Z"
             },
             {
               "$type": "Document",
@@ -353,8 +338,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\PlantDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAUAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:34:37.666Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:34:37.666Z"
             },
             {
               "$type": "Document",
@@ -366,8 +350,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\SensorReadingsController.cs",
               "ViewState": "AgIAABgAAAAAAAAAAAAYwDcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:46:43.26Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:46:43.26Z"
             },
             {
               "$type": "Document",
@@ -379,8 +362,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\PlantTypesController.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAmwCcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:50:32.481Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:50:32.481Z"
             },
             {
               "$type": "Document",
@@ -392,8 +374,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\AutoIrrigationController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:52:22.16Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:52:22.16Z"
             },
             {
               "$type": "Document",
@@ -405,8 +386,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Services\\AutoIrrigationService.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAkwD0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:52:06.048Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:52:06.048Z"
             },
             {
               "$type": "Document",
@@ -418,8 +398,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\PlantType.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:48:21.882Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:48:21.882Z"
             },
             {
               "$type": "Document",
@@ -431,8 +410,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Services\\PlantService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:35:13.057Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:35:13.057Z"
             },
             {
               "$type": "Document",
@@ -444,8 +422,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\SensorReadingDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:47:20.566Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:47:20.566Z"
             },
             {
               "$type": "Document",
@@ -455,8 +432,7 @@
               "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.204\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets",
               "ViewState": "AgIAAAQAAAAAAAAAAAAvwB8AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-06-25T18:44:31.938Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:44:31.938Z"
             },
             {
               "$type": "Document",
@@ -468,8 +444,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Models\\IrrigationEvent.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:36:24.719Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:36:24.719Z"
             },
             {
               "$type": "Document",
@@ -481,8 +456,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\IrrigationLogDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:39:50.938Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:39:50.938Z"
             },
             {
               "$type": "Document",
@@ -494,8 +468,7 @@
               "RelativeToolTip": "SmartGardenMVP\\DTOs\\IrrigationCheckDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:39:37.235Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:39:37.235Z"
             },
             {
               "$type": "Document",
@@ -507,8 +480,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\IrrigationController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:40:17.823Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:40:17.823Z"
             },
             {
               "$type": "Document",
@@ -520,8 +492,7 @@
               "RelativeToolTip": "SmartGardenMVP\\Controllers\\PlantController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEcAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T18:36:39.269Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-25T18:36:39.269Z"
             }
           ]
         }
