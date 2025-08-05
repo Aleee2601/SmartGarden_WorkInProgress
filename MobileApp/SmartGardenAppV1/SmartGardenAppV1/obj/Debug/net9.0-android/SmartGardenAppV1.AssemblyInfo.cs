@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartGardenAppV1")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+4419c11891281f4c20850d1e408b0e03aaef0200")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+bdd7cd9216012fd7f63aa7fd4c6c111d899c322d")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartGardenAppV1")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartGardenAppV1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
