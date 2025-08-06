@@ -14,5 +14,7 @@ namespace SmartGarden.Core.Models
 
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public string Mode { get; set; } = "manual"; // "manual" sau "auto"
+        public int DurationSec { get; set; }
+
     }
 }

@@ -13,7 +13,7 @@ namespace SmartGarden.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Plant> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.HasKey(p => p.PlantId);
             builder.Property(p => p.Name).IsRequired().HasMaxLength(100);
             builder.Property(p => p.MinMoisture).IsRequired();
             builder.Property(p => p.MaxMoisture).IsRequired();
@@ -25,6 +25,19 @@ namespace SmartGarden.Data.Configurations
             builder.HasMany(p => p.WateringLogs)
                    .WithOne(w => w.Plant)
                    .HasForeignKey(w => w.PlantId);
+
+            builder.HasOne(p => p.User)
+                   .WithMany(u => u.Plants)
+                   .HasForeignKey(p => p.UserId);
+
+            builder.HasOne(p => p.Species)
+                   .WithMany(s => s.Plants)
+                   .HasForeignKey(p => p.SpeciesId);
+
+            builder.HasOne(p => p.SoilType)
+                   .WithMany(s => s.Plants)
+                   .HasForeignKey(p => p.SoilTypeId);
+
         }
     }
 }

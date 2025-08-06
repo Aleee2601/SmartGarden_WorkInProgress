@@ -13,6 +13,10 @@ namespace SmartGarden.Data
         public DbSet<Plant> Plants => Set<Plant>();
         public DbSet<SensorReading> SensorReadings => Set<SensorReading>();
         public DbSet<WateringLog> WateringLogs => Set<WateringLog>();
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Species> Species => Set<Species>();
+        public DbSet<SoilType> SoilTypes => Set<SoilType>();
+        public DbSet<UserSetting> UserSettings => Set<UserSetting>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

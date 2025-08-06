@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartGarden.Core.DTOs;
 using SmartGarden.Core.Interfaces;
+using SmartGarden.Core.Models;
 
 namespace SmartGarden.API.Controllers
 {
@@ -16,18 +17,22 @@ namespace SmartGarden.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-            => Ok(await _plantService.GetAllAsync());
+        public async Task<ActionResult<IEnumerable<Plant>>> GetAll()
+        {
+            var plants = await _plantService.GetAllAsync();
+            return Ok(plants);
+        }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<Plant>> GetById(int id)
         {
             var plant = await _plantService.GetByIdAsync(id);
-            return plant == null ? NotFound() : Ok(plant);
+            if (plant == null) return NotFound();
+            return Ok(plant);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePlantDto dto)
+        public async Task<ActionResult<Plant>> Create(CreatePlantDto dto)
         {
             var plant = await _plantService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = plant.Id }, plant);
@@ -37,7 +42,8 @@ namespace SmartGarden.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _plantService.DeleteAsync(id);
-            return deleted ? NoContent() : NotFound();
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

@@ -16,5 +16,8 @@ namespace SmartGarden.Core.Models
         public double Temperature { get; set; }
         public double Humidity { get; set; }
         public double SoilMoisture { get; set; }
+        public double? LightLevel { get; set; }
+        public double? AirQuality { get; set; }
+
     }
 }
