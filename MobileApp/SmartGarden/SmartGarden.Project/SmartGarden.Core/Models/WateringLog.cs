@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SmartGarden.Core.Shared;
 
 namespace SmartGarden.Core.Models
 {
     public class WateringLog
     {
-        public int Id { get; set; }
+        public long WateringId { get; set; }                     // necesar (eroarea ta)
         public int PlantId { get; set; }
-        public Plant Plant { get; set; } = null!;
 
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-        public string Mode { get; set; } = "manual"; // "manual" sau "auto"
         public int DurationSec { get; set; }
+        public WateringMode Mode { get; set; } = WateringMode.Manual;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public Plant Plant { get; set; } = null!;
     }
 }

@@ -1,0 +1,6 @@
+CommonName,ScientificName,SoilTypeKey,WateringFrequencyPerWeek,DefaultWaterOnSeconds,DefaultPauseBetweenWaterMinutes,SoilMoistureMin,SoilMoistureMax,TempMinC,TempMaxC,LightMinLux,LightMaxLux,Notes
+Monstera Deliciosa,Monstera deliciosa,airy_loam,1.0,6,20,0.3,0.6,18,28,800,15000,Bright indirect light; allow top 3-5cm soil to dry.
+Cactus (Echinopsis),Echinopsis sp.,cactus_mix,0.25,3,20,0.1,0.25,15,35,20000,80000,Full sun; water sparingly; ensure excellent drainage.
+Rubber Plant,Ficus elastica,universal_potting,1.0,5,20,0.35,0.6,16,27,1000,20000,Medium to bright indirect; keep evenly moist but not soggy.
+Snake Plant,Sansevieria trifasciata,cactus_mix,0.5,4,20,0.15,0.35,15,30,200,20000,Tolerates low light; avoid overwatering.
+Peace Lily,Spathiphyllum wallisii,universal_potting,2.0,6,20,0.4,0.7,18,27,500,12000,Likes evenly moist soil; avoid direct sun.

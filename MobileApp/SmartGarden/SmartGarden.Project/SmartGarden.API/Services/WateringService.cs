@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartGarden.Core.Interfaces;
 using SmartGarden.Core.Models;
-using SmartGarden.Data;
+using SmartGarden.Data.Persistence;
 using System.Net.Http;
 using System.Text;
 

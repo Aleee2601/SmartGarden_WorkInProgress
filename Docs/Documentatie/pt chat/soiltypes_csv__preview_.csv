@@ -1,0 +1,5 @@
+Key,Name,Description,DefaultWaterOnSeconds,DefaultPauseBetweenWaterMinutes,DrainageScore
+cactus_mix,Cactus & Succulent Mix,Very fast-draining substrate for cacti/succulents,3,15,5
+universal_potting,Universal Potting Mix,Peat-based indoor plant mix with moderate retention,5,20,3
+airy_loam,Airy Loam + Perlite,Balanced loamy mix with extra aeration,5,15,4
+orchid_bark,Orchid Bark Mix,Coarse bark-based mix; drains very quickly,4,10,5

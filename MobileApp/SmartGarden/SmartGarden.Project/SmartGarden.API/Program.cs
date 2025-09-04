@@ -1,6 +1,6 @@
 using SmartGarden.API.Services;
 using SmartGarden.Core.Interfaces;
-using SmartGarden.Data;
+using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

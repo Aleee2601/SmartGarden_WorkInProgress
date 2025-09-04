@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartGarden.Core.Models
+﻿namespace SmartGarden.Core.Models
 {
     public class Species
     {
-        public int Id { get; set; }
+        public int SpeciesId { get; set; }                       // necesar (eroarea ta)
         public string CommonName { get; set; } = null!;
-        public string? ScientificName { get; set; }
-        public int DefaultWaterFreqDays { get; set; }
+        public string ScientificName { get; set; } = null!;
         public double DefaultSoilMoistMin { get; set; }
         public double DefaultSoilMoistMax { get; set; }
         public double DefaultTempMin { get; set; }
         public double DefaultTempMax { get; set; }
-        public double DefaultHumidMin { get; set; }
-        public double DefaultHumidMax { get; set; }
-
-        public ICollection<Plant> Plants { get; set; } = new List<Plant>();
+        public double DefaultLightMin { get; set; }
+        public double DefaultLightMax { get; set; }
+        public double DefaultHumidityMin { get; set; }
+        public double DefaultHumidityMax { get; set; }
     }
 }

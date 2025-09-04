@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartGarden.Core.Models
 {
     public class SensorReading
     {
-        public int Id { get; set; }
+        public long ReadingId { get; set; }                      // necesar (eroarea ta)
         public int PlantId { get; set; }
+
+        public double SoilMoisture { get; set; }                 // % sau raw
+        public double AirTemp { get; set; }                      // °C
+        public double AirHumidity { get; set; }                  // %
+        public double LightLevel { get; set; }                   // lux sau %
+        public double AirQuality { get; set; }                   // indice
+        public double WaterLevel { get; set; }                   // % sau cm
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
         public Plant Plant { get; set; } = null!;
-
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-        public double Temperature { get; set; }
-        public double Humidity { get; set; }
-        public double SoilMoisture { get; set; }
-        public double? LightLevel { get; set; }
-        public double? AirQuality { get; set; }
-
     }
 }

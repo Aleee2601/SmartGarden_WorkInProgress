@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartGarden.Core.Models
+﻿namespace SmartGarden.Core.Models
 {
     public class SoilType
     {
-        public int Id { get; set; }
+        public int SoilTypeId { get; set; }                      // necesar (eroarea ta)
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public int RecWaterDurSec { get; set; }
-        public int PauseBetweenWaterMin { get; set; }
-
-        public ICollection<Plant> Plants { get; set; } = new List<Plant>();
+        public int RecWaterDueSec { get; set; } = 5;             // necesar (eroarea ta)
+        public int PauseBetweenWaterMin { get; set; } = 2;
     }
 }

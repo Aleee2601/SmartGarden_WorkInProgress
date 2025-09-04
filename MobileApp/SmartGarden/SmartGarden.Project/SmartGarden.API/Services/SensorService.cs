@@ -2,7 +2,7 @@
 using SmartGarden.Core.DTOs;
 using SmartGarden.Core.Interfaces;
 using SmartGarden.Core.Models;
-using SmartGarden.Data;
+using SmartGarden.Data.Persistence;
 
 namespace SmartGarden.API.Services
 {
