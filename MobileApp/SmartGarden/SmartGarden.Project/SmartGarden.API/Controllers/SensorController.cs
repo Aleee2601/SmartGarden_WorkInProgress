@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SmartGarden.Core.DTOs;
 using SmartGarden.Core.Interfaces;
 
@@ -16,6 +17,7 @@ namespace SmartGarden.API.Controllers
         }
 
         [HttpGet("readings")]
+        [Authorize]
         public async Task<IActionResult> GetReadings(int plantId)
         {
             var readings = await _sensorService.GetReadingsForPlantAsync(plantId);
@@ -23,6 +25,7 @@ namespace SmartGarden.API.Controllers
         }
 
         [HttpPost("readings")]
+        [AllowAnonymous] // Allow ESP32 to post without auth
         public async Task<IActionResult> AddReading(int plantId, CreateSensorReadingDto dto)
         {
             var reading = await _sensorService.AddReadingAsync(plantId, dto);

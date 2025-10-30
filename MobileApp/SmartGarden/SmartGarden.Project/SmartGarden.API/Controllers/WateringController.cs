@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SmartGarden.Core.Interfaces;
 
 namespace SmartGarden.API.Controllers
 {
     [ApiController]
     [Route("api/plants/{plantId}/[controller]")]
+    [Authorize]
     public class WateringController : ControllerBase
     {
         private readonly IWateringService _wateringService;
