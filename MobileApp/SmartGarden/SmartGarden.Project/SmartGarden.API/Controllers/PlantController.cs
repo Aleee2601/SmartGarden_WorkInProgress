@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SmartGarden.Core.DTOs;
 using SmartGarden.Core.Interfaces;
 using SmartGarden.Core.Models;
+using System.Security.Claims;
 
 namespace SmartGarden.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PlantController : ControllerBase
     {
         private readonly IPlantService _plantService;
@@ -35,7 +38,7 @@ namespace SmartGarden.API.Controllers
         public async Task<ActionResult<Plant>> Create(CreatePlantDto dto)
         {
             var plant = await _plantService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = plant.Id }, plant);
+            return CreatedAtAction(nameof(GetById), new { id = plant.PlantId }, plant);
         }
 
         [HttpDelete("{id}")]
