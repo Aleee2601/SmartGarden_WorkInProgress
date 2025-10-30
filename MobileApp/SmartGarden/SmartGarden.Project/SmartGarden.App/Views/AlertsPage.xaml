@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:SmartGarden.App.ViewModels"
+             xmlns:dto="clr-namespace:SmartGarden.Core.DTOs;assembly=SmartGarden.Core"
+             x:Class="SmartGarden.App.Views.AlertsPage"
+             x:DataType="viewmodel:AlertsViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Unread Count Header -->
+        <Border Grid.Row="0" Padding="15" Background="{StaticResource Primary}">
+            <Label Text="{Binding UnreadCount, StringFormat='🔔 {0} unread alerts'}"
+                   TextColor="White"
+                   FontSize="16"
+                   FontAttributes="Bold"/>
+        </Border>
+
+        <!-- Alerts List -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsBusy}"
+                     Command="{Binding RefreshAlertsCommand}">
+
+            <CollectionView ItemsSource="{Binding Alerts}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="🔔"
+                               FontSize="60"
+                               HorizontalOptions="Center"/>
+                        <Label Text="No alerts"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               Margin="0,10,0,5"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:AlertResponseDto">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Dismiss"
+                                             BackgroundColor="Red"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AlertsViewModel}}, Path=DismissAlertCommand}"
+                                             CommandParameter="{Binding .}"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Border Margin="15,10"
+                                   Padding="15"
+                                   Background="White"
+                                   Stroke="{StaticResource Gray200}"
+                                   StrokeThickness="1"
+                                   StrokeShape="RoundRectangle 10">
+
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AlertsViewModel}}, Path=MarkAsReadCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+
+                                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+
+                                    <!-- Severity Badge -->
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding Severity}"
+                                           FontSize="10"
+                                           Padding="6,3"
+                                           TextColor="White"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Start">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Severity}" Value="0">
+                                                <Setter Property="BackgroundColor" Value="Gray"/>
+                                                <Setter Property="Text" Value="ℹ️ INFO"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Severity}" Value="1">
+                                                <Setter Property="BackgroundColor" Value="Orange"/>
+                                                <Setter Property="Text" Value="⚠️ WARNING"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Severity}" Value="2">
+                                                <Setter Property="BackgroundColor" Value="Red"/>
+                                                <Setter Property="Text" Value="🚨 CRITICAL"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <!-- Title -->
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding Title}"
+                                           FontSize="16"
+                                           FontAttributes="Bold">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsRead}" Value="False">
+                                                <Setter Property="TextColor" Value="{StaticResource Primary}"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <!-- Message -->
+                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="{Binding Message}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource Gray600}"
+                                           Margin="0,5,0,0"/>
+
+                                    <!-- Timestamp and Plant -->
+                                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Gray500}"
+                                           Margin="0,5,0,0">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0:g} · {1}">
+                                                <Binding Path="TriggeredAt"/>
+                                                <Binding Path="PlantNickname"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                </Grid>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

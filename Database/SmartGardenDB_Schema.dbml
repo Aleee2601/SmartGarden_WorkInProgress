@@ -1,0 +1,852 @@
+// =============================================
+// SmartGarden Database Schema (DBML) - ENHANCED
+// View this at: https://dbdiagram.io
+// =============================================
+
+Project SmartGarden {
+  database_type: 'SQL Server'
+  Note: '''
+    IoT Smart Garden Plant Monitoring and Auto-Watering System
+
+    Features:
+    - Multi-user plant monitoring
+    - ESP32 IoT device management
+    - Real-time sensor data collection
+    - Automatic and scheduled watering
+    - Intelligent alerts and notifications
+    - Custom plant thresholds
+    - Growth tracking with photos
+    - Maintenance logging
+    - Full audit trail
+  '''
+}
+
+// =============================================
+// Enums
+// =============================================
+
+Enum WateringMode {
+  Manual [note: '0 - Manual watering by user']
+  Auto [note: '1 - Automatic watering by threshold']
+  Scheduled [note: '2 - Scheduled watering']
+}
+
+Enum AlertType {
+  LowMoisture [note: '0 - Soil moisture too low']
+  HighMoisture [note: '1 - Soil moisture too high']
+  LowTemperature [note: '2 - Temperature too low']
+  HighTemperature [note: '3 - Temperature too high']
+  LowHumidity [note: '4 - Air humidity too low']
+  HighHumidity [note: '5 - Air humidity too high']
+  LowLight [note: '6 - Light level too low']
+  HighLight [note: '7 - Light level too high']
+  LowWaterLevel [note: '8 - Water reservoir low']
+  DeviceOffline [note: '9 - ESP32 device offline']
+  PlantNeedsWater [note: '10 - Plant needs watering']
+  MaintenanceDue [note: '11 - Maintenance task due']
+  PoorAirQuality [note: '12 - Air quality poor']
+}
+
+Enum AlertSeverity {
+  Info [note: '0 - Informational']
+  Warning [note: '1 - Warning - attention needed']
+  Critical [note: '2 - Critical - immediate action required']
+}
+
+Enum ScheduleType {
+  Daily [note: '0 - Water every day']
+  Weekly [note: '1 - Water specific days of week']
+  Interval [note: '2 - Water every N days']
+  Custom [note: '3 - Custom schedule logic']
+}
+
+Enum MaintenanceType {
+  Fertilizing [note: '0 - Fertilizer application']
+  Pruning [note: '1 - Pruning/trimming']
+  Repotting [note: '2 - Repotting plant']
+  PestControl [note: '3 - Pest/disease treatment']
+  SoilChange [note: '4 - Soil replacement']
+  Cleaning [note: '5 - Cleaning leaves/pot']
+  Other [note: '6 - Other maintenance']
+}
+
+Enum NotificationChannel {
+  Email [note: '0 - Email notifications']
+  PushNotification [note: '1 - Mobile push notifications']
+  SMS [note: '2 - SMS text messages']
+  InApp [note: '3 - In-app notifications']
+}
+
+Enum DeviceCommandType {
+  Water [note: '0 - Water plant command']
+  ReadSensors [note: '1 - Request sensor reading']
+  UpdateFirmware [note: '2 - Firmware update']
+  Reboot [note: '3 - Reboot device']
+  Calibrate [note: '4 - Calibrate sensors']
+  SetInterval [note: '5 - Set reading interval']
+  PingHeartbeat [note: '6 - Heartbeat ping']
+}
+
+Enum CommandStatus {
+  Pending [note: '0 - Command queued']
+  Sent [note: '1 - Command sent to device']
+  Acknowledged [note: '2 - Device acknowledged']
+  Completed [note: '3 - Command completed']
+  Failed [note: '4 - Command failed']
+  Timeout [note: '5 - Command timeout']
+}
+
+Enum PlantHealthStatus {
+  Excellent [note: '0 - 90-100% health']
+  Good [note: '1 - 70-89% health']
+  Fair [note: '2 - 50-69% health']
+  Poor [note: '3 - 30-49% health']
+  Critical [note: '4 - 0-29% health']
+}
+
+// =============================================
+// Core Tables - User Management
+// =============================================
+
+Table Users {
+  UserId int [pk, increment, note: 'Primary key']
+  Email nvarchar(255) [not null, unique, note: 'User email for login']
+  PasswordHash nvarchar(max) [not null, note: 'SHA256 hashed password']
+  Name nvarchar(100) [null, note: 'User display name']
+
+  // Profile info
+  PhoneNumber nvarchar(20) [null, note: 'Phone for SMS notifications']
+  TimeZone nvarchar(50) [null, default: 'UTC', note: 'User timezone for scheduling']
+  Language nvarchar(10) [null, default: 'en', note: 'UI language preference']
+
+  // Account status
+  IsEmailVerified bit [not null, default: false, note: 'Email verification status']
+  IsActive bit [not null, default: true, note: 'Account active status']
+  LastLoginAt datetime2 [null, note: 'Last successful login']
+
+  // Shadow properties (managed by EF Core)
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'Account creation timestamp']
+  UpdatedAt datetime2 [null, note: 'Last update timestamp']
+  IsDeleted bit [not null, default: false, note: 'Soft delete flag']
+
+  Indexes {
+    Email [name: 'IX_Users_Email', unique]
+    IsActive [name: 'IX_Users_IsActive']
+    (Email, IsActive) [name: 'IX_Users_Email_Active']
+  }
+
+  Note: 'User accounts for the SmartGarden system'
+}
+
+Table UserSettings {
+  UserId int [pk, ref: - Users.UserId, note: 'FK to Users (1-to-1)']
+
+  // Auto-watering settings
+  AutoWateringEnabled bit [not null, default: false, note: 'Enable automatic watering']
+  SoilMoistThreshold float [not null, default: 30.0, note: 'Global moisture % to trigger auto-water']
+  DataReadIntervalMin int [not null, default: 15, note: 'How often to read sensors (minutes)']
+
+  // Notification preferences
+  EnableEmailNotifications bit [not null, default: true]
+  EnablePushNotifications bit [not null, default: true]
+  EnableSMSNotifications bit [not null, default: false]
+  QuietHoursStart time [null, note: 'Start of quiet hours (no notifications)']
+  QuietHoursEnd time [null, note: 'End of quiet hours']
+
+  // Display preferences
+  TemperatureUnit nvarchar(1) [not null, default: 'C', note: 'C or F']
+  Theme nvarchar(10) [not null, default: 'light', note: 'UI theme: light/dark/auto']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'User preferences and settings (1-to-1 with Users)'
+}
+
+// =============================================
+// Master Data Tables
+// =============================================
+
+Table Species {
+  SpeciesId int [pk, increment, note: 'Primary key']
+  CommonName nvarchar(100) [not null, note: 'Common plant name (e.g., "Basil")']
+  ScientificName nvarchar(200) [null, note: 'Scientific name (e.g., "Ocimum basilicum")']
+  Description nvarchar(max) [null, note: 'Plant description and care tips']
+
+  // Default environmental ranges for this species
+  DefaultSoilMoistMin float [not null, default: 30.0, note: 'Minimum soil moisture %']
+  DefaultSoilMoistMax float [not null, default: 70.0, note: 'Maximum soil moisture %']
+  DefaultTempMin float [not null, default: 15.0, note: 'Minimum temperature °C']
+  DefaultTempMax float [not null, default: 30.0, note: 'Maximum temperature °C']
+  DefaultLightMin float [not null, default: 1000.0, note: 'Minimum light level (lux)']
+  DefaultLightMax float [not null, default: 50000.0, note: 'Maximum light level (lux)']
+  DefaultHumidityMin float [not null, default: 40.0, note: 'Minimum humidity %']
+  DefaultHumidityMax float [not null, default: 80.0, note: 'Maximum humidity %']
+
+  // Care recommendations
+  DefaultWaterFrequencyDays int [not null, default: 3, note: 'Water every N days']
+  DefaultFertilizerFrequencyDays int [null, note: 'Fertilize every N days']
+  GrowthRate nvarchar(20) [null, note: 'Slow/Medium/Fast']
+  MaxHeightCm int [null, note: 'Maximum height in cm']
+
+  // Categorization
+  Category nvarchar(50) [null, note: 'e.g., Herb, Vegetable, Succulent, Houseplant']
+  Tags nvarchar(200) [null, note: 'Comma-separated tags (e.g., "edible,aromatic,medicinal")']
+
+  // Media
+  ImageUrl nvarchar(500) [null, note: 'Species reference image']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    CommonName [name: 'IX_Species_CommonName']
+    Category [name: 'IX_Species_Category']
+  }
+
+  Note: 'Plant species master data with ideal growing conditions'
+}
+
+Table SoilTypes {
+  SoilTypeId int [pk, increment, note: 'Primary key']
+  Name nvarchar(100) [not null, note: 'Soil type name (e.g., "Potting Mix")']
+  Description nvarchar(max) [null, note: 'Soil characteristics description']
+
+  // Watering characteristics
+  RecWaterDueSec int [not null, default: 5, note: 'Recommended watering duration (seconds)']
+  PauseBetweenWaterMin int [not null, default: 2, note: 'Minimum pause between waterings (minutes)']
+  WaterRetention nvarchar(20) [null, note: 'Low/Medium/High water retention']
+  DrainageRate nvarchar(20) [null, note: 'Poor/Good/Excellent drainage']
+
+  // Composition
+  PHLevel float [null, note: 'Soil pH level']
+  Composition nvarchar(500) [null, note: 'Soil composition details']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'Soil type lookup table with watering recommendations'
+}
+
+// =============================================
+// IoT Device Management
+// =============================================
+
+Table Devices {
+  DeviceId int [pk, increment, note: 'Primary key']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - device owner']
+  PlantId int [null, ref: > Plants.PlantId, note: 'FK to Plants - which plant this device monitors']
+
+  // Device identification
+  DeviceName nvarchar(100) [null, note: 'User-friendly device name (e.g., "Garden Sensor 1")']
+  DeviceToken nvarchar(255) [not null, unique, note: 'API authentication token for ESP32']
+  MacAddress nvarchar(17) [not null, unique, note: 'ESP32 MAC address (format: AA:BB:CC:DD:EE:FF)']
+  IpAddress nvarchar(45) [null, note: 'Current IP address (IPv4 or IPv6)']
+  FirmwareVersion nvarchar(20) [null, note: 'ESP32 firmware version']
+
+  // Device hardware info
+  Model nvarchar(50) [null, note: 'Device model (e.g., "ESP32-DevKit")']
+  SerialNumber nvarchar(50) [null, note: 'Hardware serial number']
+
+  // Device status
+  IsOnline bit [not null, default: false, note: 'Is device currently online']
+  LastSeen datetime2 [null, note: 'Last heartbeat timestamp']
+  LastHeartbeat datetime2 [null, note: 'Last heartbeat received']
+  BatteryLevel float [null, note: 'Battery percentage (0-100) if battery powered']
+  SignalStrength int [null, note: 'WiFi signal strength (dBm)']
+
+  // Configuration
+  ReadingIntervalSec int [not null, default: 900, note: 'Sensor reading interval (15 min default)']
+  IsCalibrated bit [not null, default: false, note: 'Has device been calibrated']
+  CalibrationDate datetime2 [null, note: 'Last calibration date']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When device was registered']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    UserId [name: 'IX_Devices_UserId']
+    PlantId [name: 'IX_Devices_PlantId']
+    MacAddress [name: 'IX_Devices_MacAddress', unique]
+    DeviceToken [name: 'IX_Devices_DeviceToken', unique]
+    IsOnline [name: 'IX_Devices_IsOnline']
+    LastSeen [name: 'IX_Devices_LastSeen']
+  }
+
+  Note: 'ESP32 IoT devices registered in the system'
+}
+
+Table DeviceCommands {
+  CommandId bigint [pk, increment, note: 'Primary key']
+  DeviceId int [not null, ref: > Devices.DeviceId, note: 'FK to Devices - target device']
+  UserId int [null, ref: > Users.UserId, note: 'FK to Users - who issued command']
+
+  // Command details
+  CommandType int [not null, note: 'DeviceCommandType enum']
+  CommandPayload nvarchar(max) [null, note: 'JSON payload with command parameters']
+
+  // Command status
+  Status int [not null, default: 0, note: 'CommandStatus enum']
+  SentAt datetime2 [null, note: 'When command was sent to device']
+  AcknowledgedAt datetime2 [null, note: 'When device acknowledged']
+  CompletedAt datetime2 [null, note: 'When command completed']
+
+  // Result
+  ResponsePayload nvarchar(max) [null, note: 'JSON response from device']
+  ErrorMessage nvarchar(500) [null, note: 'Error message if failed']
+
+  // Timeout
+  TimeoutAt datetime2 [null, note: 'When command expires']
+  RetryCount int [not null, default: 0, note: 'Number of retry attempts']
+  MaxRetries int [not null, default: 3, note: 'Maximum retry attempts']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    DeviceId [name: 'IX_DeviceCommands_DeviceId']
+    Status [name: 'IX_DeviceCommands_Status']
+    (DeviceId, Status) [name: 'IX_DeviceCommands_Device_Status']
+    CreatedAt [name: 'IX_DeviceCommands_CreatedAt']
+  }
+
+  Note: 'Command queue for ESP32 devices'
+}
+
+// =============================================
+// Plant Management
+// =============================================
+
+Table Plants {
+  PlantId int [pk, increment, note: 'Primary key']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - plant owner']
+  SpeciesId int [not null, ref: > Species.SpeciesId, note: 'FK to Species - plant type']
+  SoilTypeId int [not null, ref: > SoilTypes.SoilTypeId, note: 'FK to SoilTypes - soil used']
+
+  // Plant-specific info
+  Nickname nvarchar(80) [null, note: 'User-given nickname (e.g., "My Basil")']
+  RoomName nvarchar(80) [null, note: 'Location of plant (e.g., "Kitchen")']
+  IsOutdoor bit [not null, default: false, note: 'Indoor vs outdoor plant']
+  DateAcquired datetime2 [null, note: 'When user got the plant']
+
+  // Plant status
+  CurrentHealthStatus int [null, note: 'PlantHealthStatus enum - current health']
+  CurrentHealthScore float [null, note: 'Health score 0-100']
+  Notes nvarchar(max) [null, note: 'User notes about the plant']
+
+  // Last known readings (denormalized for quick access)
+  LastSoilMoisture float [null]
+  LastAirTemp float [null]
+  LastAirHumidity float [null]
+  LastReadingAt datetime2 [null]
+
+  // Last watering
+  LastWateredAt datetime2 [null]
+  LastWateredBy nvarchar(20) [null, note: 'Manual/Auto/Scheduled']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    UserId [name: 'IX_Plants_UserId']
+    SpeciesId [name: 'IX_Plants_SpeciesId']
+    SoilTypeId [name: 'IX_Plants_SoilTypeId']
+    CurrentHealthStatus [name: 'IX_Plants_HealthStatus']
+    (UserId, SpeciesId) [name: 'IX_Plants_UserId_SpeciesId']
+    (UserId, IsOutdoor) [name: 'IX_Plants_UserId_IsOutdoor']
+    (UserId, CurrentHealthStatus) [name: 'IX_Plants_UserId_Health']
+  }
+
+  Note: 'User plants being monitored by IoT sensors'
+}
+
+Table PlantThresholds {
+  PlantId int [pk, ref: - Plants.PlantId, note: 'FK to Plants (1-to-1)']
+
+  // Custom environmental thresholds (override Species defaults)
+  CustomSoilMoistMin float [null, note: 'Custom minimum soil moisture % (overrides Species)']
+  CustomSoilMoistMax float [null, note: 'Custom maximum soil moisture %']
+  CustomTempMin float [null, note: 'Custom minimum temperature °C']
+  CustomTempMax float [null, note: 'Custom maximum temperature °C']
+  CustomLightMin float [null, note: 'Custom minimum light level (lux)']
+  CustomLightMax float [null, note: 'Custom maximum light level (lux)']
+  CustomHumidityMin float [null, note: 'Custom minimum humidity %']
+  CustomHumidityMax float [null, note: 'Custom maximum humidity %']
+
+  // Custom watering settings
+  CustomWaterDurationSec int [null, note: 'Custom watering duration (overrides SoilType)']
+  CustomWaterThreshold float [null, note: 'Custom moisture threshold to trigger auto-water']
+  CustomWaterFrequencyDays int [null, note: 'Custom watering frequency']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'Custom environmental thresholds per plant (overrides Species/SoilType defaults)'
+}
+
+Table PlantHealth {
+  HealthId bigint [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+
+  // Health metrics
+  HealthScore float [not null, note: 'Overall health score 0-100']
+  HealthStatus int [not null, note: 'PlantHealthStatus enum']
+
+  // Contributing factors
+  MoistureScore float [not null, note: 'Moisture health 0-100']
+  TemperatureScore float [not null, note: 'Temperature health 0-100']
+  HumidityScore float [not null, note: 'Humidity health 0-100']
+  LightScore float [not null, note: 'Light health 0-100']
+
+  // Analysis
+  Issues nvarchar(max) [null, note: 'JSON array of current issues']
+  Recommendations nvarchar(max) [null, note: 'JSON array of recommendations']
+
+  // Calculation metadata
+  DataPointsAnalyzed int [not null, note: 'Number of readings used']
+  AnalysisPeriodHours int [not null, default: 24, note: 'Analysis period']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When health was calculated']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_PlantHealth_PlantId']
+    HealthStatus [name: 'IX_PlantHealth_Status']
+    CreatedAt [name: 'IX_PlantHealth_CreatedAt']
+    (PlantId, CreatedAt) [name: 'IX_PlantHealth_Plant_Created']
+  }
+
+  Note: 'Calculated plant health scores and analysis (time-series)'
+}
+
+Table PlantPhotos {
+  PhotoId bigint [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - who uploaded photo']
+
+  // Photo details
+  ImageUrl nvarchar(500) [not null, note: 'Cloud storage URL (Azure Blob/S3)']
+  ThumbnailUrl nvarchar(500) [null, note: 'Thumbnail URL']
+  Caption nvarchar(200) [null, note: 'User caption']
+
+  // Plant measurements
+  HeightCm float [null, note: 'Plant height in cm']
+  LeafCount int [null, note: 'Number of leaves']
+
+  // Photo metadata
+  FileSize int [null, note: 'File size in bytes']
+  MimeType nvarchar(50) [null, note: 'Image MIME type']
+  Width int [null, note: 'Image width in pixels']
+  Height int [null, note: 'Image height in pixels']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When photo was taken']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_PlantPhotos_PlantId']
+    UserId [name: 'IX_PlantPhotos_UserId']
+    CreatedAt [name: 'IX_PlantPhotos_CreatedAt']
+  }
+
+  Note: 'Growth tracking photos for plants'
+}
+
+// =============================================
+// Sensor Data & Watering
+// =============================================
+
+Table SensorReadings {
+  ReadingId bigint [pk, increment, note: 'Primary key (using BIGINT for high volume)']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+  DeviceId int [null, ref: > Devices.DeviceId, note: 'FK to Devices - which device sent this reading']
+
+  // Sensor data from ESP32
+  SoilMoisture float [not null, note: 'Soil moisture % (0-100)']
+  AirTemp float [not null, note: 'Air temperature °C']
+  AirHumidity float [not null, note: 'Air humidity % (0-100)']
+  LightLevel float [not null, default: 0, note: 'Light level (lux)']
+  AirQuality float [not null, default: 0, note: 'Air quality index']
+  WaterLevel float [not null, default: 0, note: 'Water reservoir level % or cm']
+
+  // Raw sensor values (for calibration)
+  RawSoilMoisture int [null, note: 'Raw ADC value from moisture sensor']
+  RawAirTemp int [null, note: 'Raw sensor value']
+
+  // Reading metadata
+  ReadingDurationMs int [null, note: 'How long reading took (ms)']
+  BatteryVoltage float [null, note: 'Device battery voltage']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When reading was taken']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_SensorReadings_PlantId']
+    DeviceId [name: 'IX_SensorReadings_DeviceId']
+    CreatedAt [name: 'IX_SensorReadings_CreatedAt']
+    (PlantId, CreatedAt) [name: 'IX_SensorReadings_Plant_Created']
+  }
+
+  Note: 'Time-series sensor data from ESP32 IoT devices (high-volume table)'
+}
+
+Table WateringLogs {
+  WateringId bigint [pk, increment, note: 'Primary key (using BIGINT for high volume)']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+  DeviceId int [null, ref: > Devices.DeviceId, note: 'FK to Devices - which device watered']
+  UserId int [null, ref: > Users.UserId, note: 'FK to Users - who initiated (if manual)']
+  ScheduleId int [null, ref: > WateringSchedules.ScheduleId, note: 'FK to WateringSchedules (if scheduled)']
+
+  // Watering details
+  DurationSec int [not null, default: 5, note: 'How long plant was watered (seconds)']
+  Mode int [not null, default: 0, note: 'WateringMode enum: Manual/Auto/Scheduled']
+
+  // Pre-watering conditions
+  SoilMoistureBeforeWater float [null, note: 'Soil moisture % before watering']
+  SoilMoistureAfterWater float [null, note: 'Soil moisture % after watering (if measured)']
+
+  // Watering result
+  WasSuccessful bit [not null, default: true, note: 'Did watering complete successfully']
+  ErrorMessage nvarchar(500) [null, note: 'Error if watering failed']
+
+  // Notes
+  Notes nvarchar(500) [null, note: 'Optional notes']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When watering occurred']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_WateringLogs_PlantId']
+    DeviceId [name: 'IX_WateringLogs_DeviceId']
+    UserId [name: 'IX_WateringLogs_UserId']
+    ScheduleId [name: 'IX_WateringLogs_ScheduleId']
+    Mode [name: 'IX_WateringLogs_Mode']
+    CreatedAt [name: 'IX_WateringLogs_CreatedAt']
+    (PlantId, CreatedAt) [name: 'IX_WateringLogs_Plant_Created']
+  }
+
+  Note: 'History of all watering events (manual, automatic, and scheduled)'
+}
+
+Table WateringSchedules {
+  ScheduleId int [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+
+  // Schedule configuration
+  IsEnabled bit [not null, default: true, note: 'Is this schedule active']
+  ScheduleName nvarchar(100) [null, note: 'User-friendly schedule name (e.g., "Morning Watering")']
+  ScheduleType int [not null, default: 0, note: 'ScheduleType enum - Daily/Weekly/Interval/Custom']
+
+  // Timing
+  TimeOfDay time [not null, note: 'What time to water (e.g., 08:00:00)']
+  DaysOfWeek nvarchar(20) [null, note: 'For Weekly: comma-separated days (e.g., "Mon,Wed,Fri")']
+  IntervalDays int [null, note: 'For Interval: water every N days']
+
+  // Watering details
+  DurationSec int [not null, default: 5, note: 'How long to water (seconds)']
+
+  // Schedule state
+  NextRunAt datetime2 [null, note: 'When this schedule will run next']
+  LastRunAt datetime2 [null, note: 'When this schedule last ran']
+
+  // Statistics
+  TotalRuns int [not null, default: 0, note: 'Total number of times executed']
+  SuccessfulRuns int [not null, default: 0, note: 'Number of successful executions']
+  FailedRuns int [not null, default: 0, note: 'Number of failed executions']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_WateringSchedules_PlantId']
+    IsEnabled [name: 'IX_WateringSchedules_IsEnabled']
+    NextRunAt [name: 'IX_WateringSchedules_NextRunAt']
+    (IsEnabled, NextRunAt) [name: 'IX_WateringSchedules_Enabled_NextRun']
+  }
+
+  Note: 'Scheduled automatic watering (time-based, not threshold-based)'
+}
+
+// =============================================
+// Alerts & Notifications
+// =============================================
+
+Table Alerts {
+  AlertId bigint [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users']
+  DeviceId int [null, ref: > Devices.DeviceId, note: 'FK to Devices']
+
+  // Alert details
+  AlertType int [not null, note: 'AlertType enum']
+  Severity int [not null, note: 'AlertSeverity enum - Info/Warning/Critical']
+  Title nvarchar(200) [not null, note: 'Alert title']
+  Message nvarchar(500) [not null, note: 'Detailed alert message']
+
+  // Alert metadata
+  TriggerValue float [null, note: 'Value that triggered alert']
+  ThresholdValue float [null, note: 'Threshold value']
+  ReadingId bigint [null, ref: > SensorReadings.ReadingId, note: 'FK to SensorReadings that triggered alert']
+
+  // Alert status
+  IsRead bit [not null, default: false, note: 'Has user read this alert']
+  ReadAt datetime2 [null, note: 'When user read the alert']
+  IsResolved bit [not null, default: false, note: 'Has issue been resolved']
+  ResolvedAt datetime2 [null, note: 'When issue was resolved']
+  ResolvedByUserId int [null, ref: > Users.UserId, note: 'Who resolved it']
+
+  // Notification tracking
+  EmailSent bit [not null, default: false]
+  PushSent bit [not null, default: false]
+  SMSSent bit [not null, default: false]
+
+  // Auto-dismiss
+  AutoDismissAt datetime2 [null, note: 'When to auto-dismiss if not resolved']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_Alerts_PlantId']
+    UserId [name: 'IX_Alerts_UserId']
+    DeviceId [name: 'IX_Alerts_DeviceId']
+    AlertType [name: 'IX_Alerts_AlertType']
+    Severity [name: 'IX_Alerts_Severity']
+    IsRead [name: 'IX_Alerts_IsRead']
+    IsResolved [name: 'IX_Alerts_IsResolved']
+    CreatedAt [name: 'IX_Alerts_CreatedAt']
+    (UserId, IsRead, IsResolved) [name: 'IX_Alerts_User_Status']
+  }
+
+  Note: 'System alerts and notifications for plant care'
+}
+
+Table NotificationSettings {
+  NotificationSettingId int [pk, increment, note: 'Primary key']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users']
+
+  // Notification channel
+  Channel int [not null, note: 'NotificationChannel enum']
+
+  // Alert type preferences (which alerts to send via this channel)
+  EnableLowMoisture bit [not null, default: true]
+  EnableHighMoisture bit [not null, default: true]
+  EnableTemperature bit [not null, default: true]
+  EnableHumidity bit [not null, default: true]
+  EnableLight bit [not null, default: false]
+  EnableWaterLevel bit [not null, default: true]
+  EnableDeviceOffline bit [not null, default: true]
+  EnableMaintenance bit [not null, default: true]
+
+  // Severity filter (minimum severity to send)
+  MinimumSeverity int [not null, default: 1, note: 'Minimum AlertSeverity to send (0=Info, 1=Warning, 2=Critical)']
+
+  // Channel-specific settings
+  ChannelAddress nvarchar(255) [null, note: 'Email/phone number/device token']
+  IsVerified bit [not null, default: false, note: 'Has channel been verified']
+
+  // Rate limiting
+  MaxNotificationsPerHour int [not null, default: 10]
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    UserId [name: 'IX_NotificationSettings_UserId']
+    Channel [name: 'IX_NotificationSettings_Channel']
+    (UserId, Channel) [name: 'IX_NotificationSettings_User_Channel']
+  }
+
+  Note: 'User notification preferences per channel'
+}
+
+// =============================================
+// Maintenance & Care
+// =============================================
+
+Table MaintenanceLogs {
+  MaintenanceId bigint [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - who performed maintenance']
+
+  // Maintenance details
+  MaintenanceType int [not null, note: 'MaintenanceType enum']
+  Title nvarchar(200) [not null, note: 'Maintenance title']
+  Description nvarchar(max) [null, note: 'Detailed description']
+
+  // Scheduling
+  PerformedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When maintenance was done']
+  NextDueDate datetime2 [null, note: 'When next maintenance is due']
+  FrequencyDays int [null, note: 'Repeat every N days']
+
+  // Products used
+  ProductsUsed nvarchar(500) [null, note: 'Fertilizer, pesticide, etc.']
+  Cost decimal(10,2) [null, note: 'Cost of maintenance']
+
+  // Photos
+  BeforePhotoUrl nvarchar(500) [null]
+  AfterPhotoUrl nvarchar(500) [null]
+
+  // Reminders
+  SendReminderDaysBefore int [null, note: 'Send reminder N days before due date']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_MaintenanceLogs_PlantId']
+    UserId [name: 'IX_MaintenanceLogs_UserId']
+    MaintenanceType [name: 'IX_MaintenanceLogs_Type']
+    NextDueDate [name: 'IX_MaintenanceLogs_NextDue']
+    PerformedAt [name: 'IX_MaintenanceLogs_PerformedAt']
+  }
+
+  Note: 'Plant maintenance history (fertilizing, pruning, repotting, etc.)'
+}
+
+// =============================================
+// System & Security
+// =============================================
+
+Table AuditLogs {
+  AuditId bigint [pk, increment, note: 'Primary key']
+  UserId int [null, ref: > Users.UserId, note: 'FK to Users (null for system actions)']
+
+  // Action details
+  Action nvarchar(100) [not null, note: 'Action performed (e.g., Login, CreatePlant, UpdateSettings)']
+  EntityType nvarchar(50) [null, note: 'Affected entity type (e.g., Plant, Device, User)']
+  EntityId nvarchar(50) [null, note: 'ID of affected entity']
+
+  // Request metadata
+  IpAddress nvarchar(45) [null, note: 'IP address']
+  UserAgent nvarchar(500) [null, note: 'Browser/device user agent']
+
+  // Change tracking
+  OldValues nvarchar(max) [null, note: 'JSON of old values']
+  NewValues nvarchar(max) [null, note: 'JSON of new values']
+
+  // Result
+  Success bit [not null, default: true]
+  ErrorMessage nvarchar(500) [null]
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+
+  Indexes {
+    UserId [name: 'IX_AuditLogs_UserId']
+    Action [name: 'IX_AuditLogs_Action']
+    EntityType [name: 'IX_AuditLogs_EntityType']
+    CreatedAt [name: 'IX_AuditLogs_CreatedAt']
+    (UserId, CreatedAt) [name: 'IX_AuditLogs_User_Created']
+  }
+
+  Note: 'Security and compliance audit trail'
+}
+
+Table SystemLogs {
+  LogId bigint [pk, increment, note: 'Primary key']
+
+  // Log details
+  Level nvarchar(20) [not null, note: 'Trace, Debug, Info, Warning, Error, Fatal']
+  Message nvarchar(max) [not null, note: 'Log message']
+  Exception nvarchar(max) [null, note: 'Exception details if error']
+
+  // Context
+  Source nvarchar(100) [null, note: 'Component/service that logged']
+  UserId int [null, ref: > Users.UserId, note: 'FK to Users if user-related']
+  DeviceId int [null, ref: > Devices.DeviceId, note: 'FK to Devices if device-related']
+
+  // Request tracking
+  RequestId nvarchar(100) [null, note: 'Correlation ID for distributed tracing']
+  IpAddress nvarchar(45) [null]
+
+  // Additional data
+  Properties nvarchar(max) [null, note: 'JSON additional properties']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+
+  Indexes {
+    Level [name: 'IX_SystemLogs_Level']
+    Source [name: 'IX_SystemLogs_Source']
+    UserId [name: 'IX_SystemLogs_UserId']
+    DeviceId [name: 'IX_SystemLogs_DeviceId']
+    CreatedAt [name: 'IX_SystemLogs_CreatedAt']
+    (Level, CreatedAt) [name: 'IX_SystemLogs_Level_Created']
+  }
+
+  Note: 'Application logs for debugging and monitoring'
+}
+
+// =============================================
+// Relationships Summary
+// =============================================
+
+// User Management:
+// - User → UserSettings: 1-to-1
+// - User → Plants: 1-to-Many
+// - User → Devices: 1-to-Many
+// - User → Alerts: 1-to-Many
+// - User → NotificationSettings: 1-to-Many
+// - User → WateringLogs: 1-to-Many (manual watering)
+// - User → MaintenanceLogs: 1-to-Many
+// - User → PlantPhotos: 1-to-Many
+// - User → AuditLogs: 1-to-Many
+// - User → SystemLogs: 1-to-Many
+
+// Master Data:
+// - Species → Plants: 1-to-Many
+// - SoilTypes → Plants: 1-to-Many
+
+// Plants:
+// - Plant → PlantThresholds: 1-to-1
+// - Plant → PlantHealth: 1-to-Many (time-series)
+// - Plant → PlantPhotos: 1-to-Many
+// - Plant → SensorReadings: 1-to-Many
+// - Plant → WateringLogs: 1-to-Many
+// - Plant → WateringSchedules: 1-to-Many
+// - Plant → Alerts: 1-to-Many
+// - Plant → MaintenanceLogs: 1-to-Many
+// - Plant → Devices: 1-to-Many (one plant can have multiple sensors)
+
+// Devices:
+// - Device → SensorReadings: 1-to-Many
+// - Device → WateringLogs: 1-to-Many
+// - Device → DeviceCommands: 1-to-Many
+// - Device → Alerts: 1-to-Many
+// - Device → SystemLogs: 1-to-Many
+
+// Watering:
+// - WateringSchedule → WateringLogs: 1-to-Many
+
+// Alerts:
+// - SensorReading → Alerts: 1-to-Many (reading can trigger multiple alerts)
+// - Alert → User (resolver): Many-to-1
