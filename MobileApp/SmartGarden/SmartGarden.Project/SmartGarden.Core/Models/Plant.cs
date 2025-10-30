@@ -5,12 +5,26 @@ namespace SmartGarden.Core.Models
 {
     public class Plant
     {
+        // EF primary key (keeps existing DB column name)
         public int PlantId { get; set; }
+
+        // Adapter property used by controllers/services
+        public int Id
+        {
+            get => PlantId;
+            set => PlantId = value;
+        }
+
         public int UserId { get; set; }
         public int SpeciesId { get; set; }
         public int SoilTypeId { get; set; }
 
-        public string? Nickname { get; set; }                    // necesar (eroarea ta)
+        // Keep existing fields but add the properties your services expect
+        public string? Nickname { get; set; }
+        public string? Name { get; set; }            // added to match CreatePlantDto
+        public double MinMoisture { get; set; }     // added
+        public double MaxMoisture { get; set; }     // added
+
         public string? RoomName { get; set; }
         public bool IsOutdoor { get; set; }
         public DateTime? DateAcquired { get; set; }
