@@ -19,8 +19,7 @@ namespace SmartGarden.API.Controllers
         [HttpPost]
         public async Task<IActionResult> WaterPlant(int plantId, [FromQuery] string mode = "manual", [FromQuery] int durationSec = 5)
         {
-            var log = await _wateringService.LogWateringAsync(plantId, mode);
-            log.DurationSec = durationSec;
+            var log = await _wateringService.LogWateringAsync(plantId, mode, durationSec);
 
             return Ok(new
             {
