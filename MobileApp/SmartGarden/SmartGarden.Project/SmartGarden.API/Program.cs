@@ -9,6 +9,8 @@ using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Set URLs explicitly
+builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:5001");
 
 // Use the extension defined in SmartGarden.Data.Extensions
 builder.Services.AddDataLayer(builder.Configuration);

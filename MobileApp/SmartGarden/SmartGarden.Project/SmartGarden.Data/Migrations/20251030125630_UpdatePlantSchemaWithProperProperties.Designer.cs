@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartGarden.Data.Persistence;
 
@@ -11,9 +12,11 @@ using SmartGarden.Data.Persistence;
 namespace SmartGarden.Data.Migrations
 {
     [DbContext(typeof(SmartGardenDbContext))]
-    partial class SmartGardenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251030125630_UpdatePlantSchemaWithProperProperties")]
+    partial class UpdatePlantSchemaWithProperProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
