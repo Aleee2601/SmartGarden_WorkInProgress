@@ -29,7 +29,7 @@ namespace SmartGarden.API.Services
                 .ToListAsync();
         }
 
-        public async Task<WateringLog> LogWateringAsync(int plantId, string mode)
+        public async Task<WateringLog> LogWateringAsync(int plantId, string mode, int durationSec = 5)
         {
             var plantExists = await _context.Plants.AnyAsync(p => p.PlantId == plantId);
             if (!plantExists)
@@ -44,7 +44,7 @@ namespace SmartGarden.API.Services
                 PlantId = plantId,
                 Mode = wateringMode,
                 CreatedAt = DateTime.UtcNow,
-                DurationSec = 5 // Default duration
+                DurationSec = durationSec
             };
 
             _context.WateringLogs.Add(log);

@@ -28,10 +28,9 @@ namespace SmartGarden.API.Services
                 UserId = dto.UserId,
                 SpeciesId = dto.SpeciesId,
                 SoilTypeId = dto.SoilTypeId,
-                Nickname = dto.Nickname,
-                RoomName = dto.RoomName,
-                IsOutdoor = dto.IsOutdoor,
-                DateAcquired = dto.DateAcquired
+                Name = dto.Name,
+                MinMoisture = dto.MinMoisture,
+                MaxMoisture = dto.MaxMoisture
             };
             _context.Plants.Add(plant);
             await _context.SaveChangesAsync();

@@ -10,6 +10,6 @@ namespace SmartGarden.Core.Interfaces
     public interface IWateringService
     {
         Task<IEnumerable<WateringLog>> GetLogsAsync(int plantId);
-        Task<WateringLog> LogWateringAsync(int plantId, string mode);
+        Task<WateringLog> LogWateringAsync(int plantId, string mode, int durationSec = 5);
     }
 }
