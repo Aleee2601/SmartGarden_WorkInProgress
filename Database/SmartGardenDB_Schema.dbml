@@ -17,6 +17,30 @@ Enum WateringMode {
   Auto [note: '1 - Automatic watering by system']
 }
 
+Enum AlertType {
+  LowMoisture [note: '0 - Soil moisture too low']
+  HighMoisture [note: '1 - Soil moisture too high']
+  LowTemperature [note: '2 - Temperature too low']
+  HighTemperature [note: '3 - Temperature too high']
+  LowHumidity [note: '4 - Air humidity too low']
+  HighHumidity [note: '5 - Air humidity too high']
+  LowWaterLevel [note: '6 - Water reservoir low']
+  DeviceOffline [note: '7 - ESP32 device offline']
+  PlantNeedsWater [note: '8 - Plant needs watering']
+}
+
+Enum AlertSeverity {
+  Info [note: '0 - Informational']
+  Warning [note: '1 - Warning - attention needed']
+  Critical [note: '2 - Critical - immediate action required']
+}
+
+Enum ScheduleType {
+  Daily [note: '0 - Water every day']
+  Weekly [note: '1 - Water specific days of week']
+  Interval [note: '2 - Water every N days']
+}
+
 // =============================================
 // Tables
 // =============================================
@@ -163,6 +187,147 @@ Table WateringLogs {
   }
 
   Note: 'History of all watering events (manual and automatic)'
+}
+
+// =============================================
+// NEW TABLES - Enhanced Features
+// =============================================
+
+Table Devices {
+  DeviceId int [pk, increment, note: 'Primary key']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - device owner']
+  PlantId int [null, ref: > Plants.PlantId, note: 'FK to Plants - which plant this device monitors (nullable if not assigned)']
+
+  // Device identification
+  DeviceName nvarchar(100) [null, note: 'User-friendly device name (e.g., "Garden Sensor 1")']
+  DeviceToken nvarchar(255) [not null, unique, note: 'API authentication token for ESP32']
+  MacAddress nvarchar(17) [not null, unique, note: 'ESP32 MAC address (format: AA:BB:CC:DD:EE:FF)']
+  IpAddress nvarchar(45) [null, note: 'Current IP address (IPv4 or IPv6)']
+  FirmwareVersion nvarchar(20) [null, note: 'ESP32 firmware version']
+
+  // Device status
+  IsOnline bit [not null, default: false, note: 'Is device currently online']
+  LastSeen datetime2 [null, note: 'Last heartbeat timestamp']
+  BatteryLevel float [null, note: 'Battery percentage (0-100) if battery powered']
+  SignalStrength int [null, note: 'WiFi signal strength (dBm)']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When device was registered']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    UserId [name: 'IX_Devices_UserId']
+    PlantId [name: 'IX_Devices_PlantId']
+    MacAddress [name: 'IX_Devices_MacAddress', unique]
+    DeviceToken [name: 'IX_Devices_DeviceToken', unique]
+    IsOnline [name: 'IX_Devices_IsOnline']
+  }
+
+  Note: 'ESP32 IoT devices registered in the system'
+}
+
+Table Alerts {
+  AlertId bigint [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants - which plant triggered this alert']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - who should receive this alert']
+  DeviceId int [null, ref: > Devices.DeviceId, note: 'FK to Devices - which device generated this alert']
+
+  // Alert details
+  AlertType int [not null, note: 'AlertType enum - type of alert']
+  Severity int [not null, note: 'AlertSeverity enum - Info/Warning/Critical']
+  Title nvarchar(200) [not null, note: 'Alert title (e.g., "Low Soil Moisture")']
+  Message nvarchar(500) [not null, note: 'Detailed alert message']
+
+  // Alert metadata
+  TriggerValue float [null, note: 'Value that triggered alert (e.g., moisture = 15%)']
+  ThresholdValue float [null, note: 'Threshold value (e.g., min moisture = 30%)']
+
+  // Alert status
+  IsRead bit [not null, default: false, note: 'Has user read this alert']
+  ReadAt datetime2 [null, note: 'When user read the alert']
+  IsResolved bit [not null, default: false, note: 'Has issue been resolved']
+  ResolvedAt datetime2 [null, note: 'When issue was resolved']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When alert was created']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_Alerts_PlantId']
+    UserId [name: 'IX_Alerts_UserId']
+    DeviceId [name: 'IX_Alerts_DeviceId']
+    AlertType [name: 'IX_Alerts_AlertType']
+    Severity [name: 'IX_Alerts_Severity']
+    IsRead [name: 'IX_Alerts_IsRead']
+    IsResolved [name: 'IX_Alerts_IsResolved']
+    CreatedAt [name: 'IX_Alerts_CreatedAt', note: 'For time-based queries']
+    (UserId, IsRead) [name: 'IX_Alerts_UserId_IsRead', note: 'For unread alerts query']
+  }
+
+  Note: 'System alerts and notifications for plant care'
+}
+
+Table PlantThresholds {
+  PlantId int [pk, ref: - Plants.PlantId, note: 'FK to Plants (1-to-1) - which plant these thresholds are for']
+
+  // Custom environmental thresholds (override Species defaults)
+  CustomSoilMoistMin float [null, note: 'Custom minimum soil moisture % (overrides Species)']
+  CustomSoilMoistMax float [null, note: 'Custom maximum soil moisture %']
+  CustomTempMin float [null, note: 'Custom minimum temperature °C']
+  CustomTempMax float [null, note: 'Custom maximum temperature °C']
+  CustomLightMin float [null, note: 'Custom minimum light level (lux)']
+  CustomLightMax float [null, note: 'Custom maximum light level (lux)']
+  CustomHumidityMin float [null, note: 'Custom minimum humidity %']
+  CustomHumidityMax float [null, note: 'Custom maximum humidity %']
+
+  // Custom watering settings
+  CustomWaterDurationSec int [null, note: 'Custom watering duration (overrides SoilType)']
+  CustomWaterThreshold float [null, note: 'Custom moisture threshold to trigger auto-water']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'Custom environmental thresholds per plant (overrides Species/SoilType defaults)'
+}
+
+Table WateringSchedules {
+  ScheduleId int [pk, increment, note: 'Primary key']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants - which plant to water']
+
+  // Schedule configuration
+  IsEnabled bit [not null, default: true, note: 'Is this schedule active']
+  ScheduleName nvarchar(100) [null, note: 'User-friendly schedule name (e.g., "Morning Watering")']
+  ScheduleType int [not null, default: 0, note: 'ScheduleType enum - Daily/Weekly/Interval']
+
+  // Timing
+  TimeOfDay time [not null, note: 'What time to water (e.g., 08:00:00)']
+  DaysOfWeek nvarchar(20) [null, note: 'Comma-separated days (e.g., "Mon,Wed,Fri") or bitmask (0=Sun...6=Sat)']
+  IntervalDays int [null, note: 'For Interval type: water every N days']
+
+  // Watering details
+  DurationSec int [not null, default: 5, note: 'How long to water (seconds)']
+
+  // Schedule state
+  NextRunAt datetime2 [null, note: 'When this schedule will run next']
+  LastRunAt datetime2 [null, note: 'When this schedule last ran']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_WateringSchedules_PlantId']
+    IsEnabled [name: 'IX_WateringSchedules_IsEnabled']
+    NextRunAt [name: 'IX_WateringSchedules_NextRunAt', note: 'For finding due schedules']
+    (IsEnabled, NextRunAt) [name: 'IX_WateringSchedules_Enabled_NextRun', note: 'Composite for schedule processing']
+  }
+
+  Note: 'Scheduled automatic watering (time-based, not threshold-based)'
 }
 
 // =============================================
