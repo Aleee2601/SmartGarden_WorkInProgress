@@ -9,13 +9,11 @@ using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
+
 // Use the extension defined in SmartGarden.Data.Extensions
 builder.Services.AddDataLayer(builder.Configuration);
-=======
-// Database Configuration
+//builder.Services.AddSmartGardenData(builder.Configuration.GetConnectionString("DefaultConnection")!);
 builder.Services.AddSmartGardenData(builder.Configuration.GetConnectionString("DefaultConnection")!);
->>>>>>> 6bec11fdb420d5aaed9dcf0159331d2100c7aa64
 
 // Controllers
 builder.Services.AddControllers();
@@ -111,12 +109,10 @@ builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IWateringService, WateringService>();
 builder.Services.AddHttpClient<WateringService>();
 
-<<<<<<< HEAD
-=======
+
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
 
->>>>>>> 6bec11fdb420d5aaed9dcf0159331d2100c7aa64
 var app = builder.Build();
 
 // Middleware Pipeline
