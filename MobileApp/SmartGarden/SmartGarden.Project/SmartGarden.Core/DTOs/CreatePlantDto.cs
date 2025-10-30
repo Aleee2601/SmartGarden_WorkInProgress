@@ -11,8 +11,9 @@ namespace SmartGarden.Core.DTOs
         public int UserId { get; set; }
         public int SpeciesId { get; set; }
         public int SoilTypeId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public double MinMoisture { get; set; }
-        public double MaxMoisture { get; set; }
+        public string? Nickname { get; set; }
+        public string? RoomName { get; set; }
+        public bool IsOutdoor { get; set; }
+        public DateTime? DateAcquired { get; set; }
     }
 }

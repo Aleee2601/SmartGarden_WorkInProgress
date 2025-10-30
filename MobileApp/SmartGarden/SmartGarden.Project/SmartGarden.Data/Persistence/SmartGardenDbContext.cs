@@ -17,6 +17,19 @@ public class SmartGardenDbContext : DbContext
     public DbSet<SensorReading> SensorReadings => Set<SensorReading>();
     public DbSet<WateringLog> WateringLogs => Set<WateringLog>();
 
+    // New DbSets for enhanced features
+    public DbSet<Device> Devices => Set<Device>();
+    public DbSet<DeviceCommand> DeviceCommands => Set<DeviceCommand>();
+    public DbSet<PlantThreshold> PlantThresholds => Set<PlantThreshold>();
+    public DbSet<PlantHealth> PlantHealths => Set<PlantHealth>();
+    public DbSet<PlantPhoto> PlantPhotos => Set<PlantPhoto>();
+    public DbSet<WateringSchedule> WateringSchedules => Set<WateringSchedule>();
+    public DbSet<Alert> Alerts => Set<Alert>();
+    public DbSet<NotificationSetting> NotificationSettings => Set<NotificationSetting>();
+    public DbSet<MaintenanceLog> MaintenanceLogs => Set<MaintenanceLog>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Încarcă toate mapările Fluent API din assembly-ul curent
@@ -30,6 +43,19 @@ public class SmartGardenDbContext : DbContext
         ConfigureAuditAndSoftDelete<SoilType>(modelBuilder);
         ConfigureAuditAndSoftDelete<SensorReading>(modelBuilder);
         ConfigureAuditAndSoftDelete<WateringLog>(modelBuilder);
+
+        // Configure new entities
+        ConfigureAuditAndSoftDelete<Device>(modelBuilder);
+        ConfigureAuditAndSoftDelete<DeviceCommand>(modelBuilder);
+        ConfigureAuditAndSoftDelete<PlantThreshold>(modelBuilder);
+        ConfigureAuditAndSoftDelete<PlantHealth>(modelBuilder);
+        ConfigureAuditAndSoftDelete<PlantPhoto>(modelBuilder);
+        ConfigureAuditAndSoftDelete<WateringSchedule>(modelBuilder);
+        ConfigureAuditAndSoftDelete<Alert>(modelBuilder);
+        ConfigureAuditAndSoftDelete<NotificationSetting>(modelBuilder);
+        ConfigureAuditAndSoftDelete<MaintenanceLog>(modelBuilder);
+        ConfigureAuditAndSoftDelete<AuditLog>(modelBuilder);
+        ConfigureAuditAndSoftDelete<SystemLog>(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
     }

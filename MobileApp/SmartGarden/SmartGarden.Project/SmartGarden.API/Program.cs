@@ -9,14 +9,9 @@ using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Use the extension defined in SmartGarden.Data.Extensions
-builder.Services.AddDataLayer(builder.Configuration);
-
-
-// Use the extension defined in SmartGarden.Data.Extensions
-builder.Services.AddDataLayer(builder.Configuration);
-
+// Use SQL Server with the "DefaultConnection" connection string
+builder.Services.AddDataLayer(builder.Configuration, connectionName: "DefaultConnection", useSqliteDev: false);
 
 // Controllers
 builder.Services.AddControllers();
@@ -111,6 +106,10 @@ builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IWateringService, WateringService>();
 builder.Services.AddHttpClient<WateringService>();
+
+// New enhanced services
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IAlertService, AlertService>();
 
 
 // Background Services

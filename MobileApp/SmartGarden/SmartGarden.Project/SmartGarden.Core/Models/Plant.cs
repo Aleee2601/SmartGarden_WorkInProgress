@@ -5,7 +5,7 @@ namespace SmartGarden.Core.Models
 {
     public class Plant
     {
-        // Primary key - EF Core maps this to "Id" column in database
+        // Primary key
         public int PlantId { get; set; }
 
         // Foreign keys
@@ -13,10 +13,11 @@ namespace SmartGarden.Core.Models
         public int SpeciesId { get; set; }
         public int SoilTypeId { get; set; }
 
-        // Database properties from schema
-        public string Name { get; set; } = string.Empty;
-        public double MinMoisture { get; set; }
-        public double MaxMoisture { get; set; }
+        // Plant properties (matches PlantConfiguration)
+        public string? Nickname { get; set; }
+        public string? RoomName { get; set; }
+        public bool IsOutdoor { get; set; }
+        public DateTime? DateAcquired { get; set; }
 
         // Navigation properties
         public User User { get; set; } = null!;
