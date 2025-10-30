@@ -20,10 +20,13 @@ namespace SmartGarden.API.Services
             var reading = new SensorReading
             {
                 PlantId = plantId,
-                Temperature = dto.Temperature,
-                Humidity = dto.Humidity,
+                AirTemp = dto.Temperature,
+                AirHumidity = dto.Humidity,
                 SoilMoisture = dto.SoilMoisture,
-                Timestamp = DateTime.UtcNow
+                LightLevel = 0, // Default value, can be updated later
+                AirQuality = 0, // Default value, can be updated later
+                WaterLevel = 0, // Default value, can be updated later
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.SensorReadings.Add(reading);
@@ -35,7 +38,7 @@ namespace SmartGarden.API.Services
         {
             return await _context.SensorReadings
                 .Where(r => r.PlantId == plantId)
-                .OrderByDescending(r => r.Timestamp)
+                .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
         }
     }
