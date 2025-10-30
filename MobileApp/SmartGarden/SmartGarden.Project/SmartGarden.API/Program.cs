@@ -9,8 +9,14 @@ using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Use the extension defined in SmartGarden.Data.Extensions
 builder.Services.AddDataLayer(builder.Configuration);
+
+
+// Use the extension defined in SmartGarden.Data.Extensions
+builder.Services.AddDataLayer(builder.Configuration);
+
 
 // Controllers
 builder.Services.AddControllers();
@@ -105,6 +111,7 @@ builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IWateringService, WateringService>();
 builder.Services.AddHttpClient<WateringService>();
+
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
