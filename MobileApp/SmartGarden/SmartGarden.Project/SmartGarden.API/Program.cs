@@ -9,15 +9,9 @@ using SmartGarden.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Use the extension defined in SmartGarden.Data.Extensions
 // Use SQL Server with the "DefaultConnection" connection string
 builder.Services.AddDataLayer(builder.Configuration, connectionName: "DefaultConnection", useSqliteDev: false);
-
-
-// Use the extension defined in SmartGarden.Data.Extensions
-builder.Services.AddDataLayer(builder.Configuration);
-
 
 // Controllers
 builder.Services.AddControllers();
