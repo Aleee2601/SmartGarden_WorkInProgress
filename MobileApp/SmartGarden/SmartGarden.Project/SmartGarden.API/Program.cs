@@ -107,6 +107,10 @@ builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IWateringService, WateringService>();
 builder.Services.AddHttpClient<WateringService>();
 
+// New enhanced services
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
