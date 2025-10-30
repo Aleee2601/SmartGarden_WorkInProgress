@@ -1,0 +1,177 @@
+// =============================================
+// SmartGarden Database Schema (DBML)
+// View this at: https://dbdiagram.io
+// =============================================
+
+Project SmartGarden {
+  database_type: 'SQL Server'
+  Note: 'IoT Smart Garden Plant Monitoring and Auto-Watering System'
+}
+
+// =============================================
+// Enums
+// =============================================
+
+Enum WateringMode {
+  Manual [note: '0 - Manual watering by user']
+  Auto [note: '1 - Automatic watering by system']
+}
+
+// =============================================
+// Tables
+// =============================================
+
+Table Users {
+  UserId int [pk, increment, note: 'Primary key']
+  Email nvarchar(255) [not null, unique, note: 'User email for login']
+  PasswordHash nvarchar(max) [not null, note: 'SHA256 hashed password']
+  Name nvarchar(max) [null, note: 'User display name']
+
+  // Shadow properties (managed by EF Core)
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'Account creation timestamp']
+  UpdatedAt datetime2 [null, note: 'Last update timestamp']
+  IsDeleted bit [not null, default: false, note: 'Soft delete flag']
+
+  Indexes {
+    Email [name: 'IX_Users_Email']
+  }
+
+  Note: 'User accounts for the SmartGarden system'
+}
+
+Table UserSettings {
+  UserId int [pk, ref: - Users.UserId, note: 'FK to Users (1-to-1)']
+  AutoWateringEnabled bit [not null, default: false, note: 'Enable automatic watering']
+  SoilMoistThreshold float [not null, default: 30.0, note: 'Minimum moisture % to trigger auto-water']
+  DataReadIntervalMin int [not null, default: 15, note: 'How often to read sensors (minutes)']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'User preferences and settings (1-to-1 with Users)'
+}
+
+Table Species {
+  SpeciesId int [pk, increment, note: 'Primary key']
+  CommonName nvarchar(100) [not null, note: 'Common plant name (e.g., "Basil")']
+  ScientificName nvarchar(max) [null, note: 'Scientific name (e.g., "Ocimum basilicum")']
+
+  // Default environmental ranges for this species
+  DefaultSoilMoistMin float [not null, default: 30.0, note: 'Minimum soil moisture %']
+  DefaultSoilMoistMax float [not null, default: 70.0, note: 'Maximum soil moisture %']
+  DefaultTempMin float [not null, default: 15.0, note: 'Minimum temperature °C']
+  DefaultTempMax float [not null, default: 30.0, note: 'Maximum temperature °C']
+  DefaultLightMin float [not null, default: 1000.0, note: 'Minimum light level (lux)']
+  DefaultLightMax float [not null, default: 50000.0, note: 'Maximum light level (lux)']
+  DefaultHumidityMin float [not null, default: 40.0, note: 'Minimum humidity %']
+  DefaultHumidityMax float [not null, default: 80.0, note: 'Maximum humidity %']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'Plant species master data with ideal growing conditions'
+}
+
+Table SoilTypes {
+  SoilTypeId int [pk, increment, note: 'Primary key']
+  Name nvarchar(100) [not null, note: 'Soil type name (e.g., "Potting Mix")']
+  Description nvarchar(max) [null, note: 'Soil characteristics description']
+  RecWaterDueSec int [not null, default: 5, note: 'Recommended watering duration (seconds)']
+  PauseBetweenWaterMin int [not null, default: 2, note: 'Minimum pause between waterings (minutes)']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Note: 'Soil type lookup table with watering recommendations'
+}
+
+Table Plants {
+  PlantId int [pk, increment, note: 'Primary key']
+  UserId int [not null, ref: > Users.UserId, note: 'FK to Users - plant owner']
+  SpeciesId int [not null, ref: > Species.SpeciesId, note: 'FK to Species - plant type']
+  SoilTypeId int [not null, ref: > SoilTypes.SoilTypeId, note: 'FK to SoilTypes - soil used']
+
+  // Plant-specific info
+  Nickname nvarchar(80) [null, note: 'User-given nickname (e.g., "My Basil")']
+  RoomName nvarchar(80) [null, note: 'Location of plant (e.g., "Kitchen")']
+  IsOutdoor bit [not null, default: false, note: 'Indoor vs outdoor plant']
+  DateAcquired datetime2 [null, note: 'When user got the plant']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`]
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    UserId [name: 'IX_Plants_UserId']
+    SpeciesId [name: 'IX_Plants_SpeciesId']
+    SoilTypeId [name: 'IX_Plants_SoilTypeId']
+    (UserId, SpeciesId) [name: 'IX_Plants_UserId_SpeciesId']
+    (UserId, IsOutdoor) [name: 'IX_Plants_UserId_IsOutdoor']
+  }
+
+  Note: 'User plants being monitored by IoT sensors'
+}
+
+Table SensorReadings {
+  ReadingId bigint [pk, increment, note: 'Primary key (using BIGINT for high volume)']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants - which plant this reading is for']
+
+  // Sensor data from ESP32
+  SoilMoisture float [not null, note: 'Soil moisture % (0-100)']
+  AirTemp float [not null, note: 'Air temperature °C']
+  AirHumidity float [not null, note: 'Air humidity % (0-100)']
+  LightLevel float [not null, default: 0, note: 'Light level (lux)']
+  AirQuality float [not null, default: 0, note: 'Air quality index']
+  WaterLevel float [not null, default: 0, note: 'Water reservoir level % or cm']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When reading was taken']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_SensorReadings_PlantId']
+    CreatedAt [name: 'IX_SensorReadings_CreatedAt', note: 'For time-series queries']
+  }
+
+  Note: 'Time-series sensor data from ESP32 IoT devices (high-volume table)'
+}
+
+Table WateringLogs {
+  WateringId bigint [pk, increment, note: 'Primary key (using BIGINT for high volume)']
+  PlantId int [not null, ref: > Plants.PlantId, note: 'FK to Plants - which plant was watered']
+
+  // Watering details
+  DurationSec int [not null, default: 5, note: 'How long plant was watered (seconds)']
+  Mode int [not null, default: 0, note: 'WateringMode enum: 0=Manual, 1=Auto']
+
+  // Shadow properties
+  CreatedAt datetime2 [not null, default: `GETUTCDATE()`, note: 'When watering occurred']
+  UpdatedAt datetime2 [null]
+  IsDeleted bit [not null, default: false]
+
+  Indexes {
+    PlantId [name: 'IX_WateringLogs_PlantId']
+    CreatedAt [name: 'IX_WateringLogs_CreatedAt', note: 'For history queries']
+  }
+
+  Note: 'History of all watering events (manual and automatic)'
+}
+
+// =============================================
+// Relationships Summary
+// =============================================
+
+// User -> UserSettings: 1-to-1
+// User -> Plants: 1-to-Many
+// Species -> Plants: 1-to-Many
+// SoilTypes -> Plants: 1-to-Many
+// Plant -> SensorReadings: 1-to-Many
+// Plant -> WateringLogs: 1-to-Many
