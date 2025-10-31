@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SmartGarden_WorkInProgress.Controls.WeeklyStatsChart"
+             x:Name="this">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
+        <!-- Values -->
+        <Grid Grid.Row="0"
+              x:Name="ValuesGrid"
+              ColumnSpacing="4" />
+
+        <!-- Bars -->
+        <Grid Grid.Row="1"
+              x:Name="BarsGrid"
+              HeightRequest="120"
+              ColumnSpacing="4" />
+
+        <!-- Day Labels -->
+        <Grid Grid.Row="2"
+              x:Name="DaysGrid"
+              ColumnSpacing="4" />
+    </Grid>
+</ContentView>

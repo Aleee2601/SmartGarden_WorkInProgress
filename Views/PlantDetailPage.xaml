@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SmartGarden_WorkInProgress.ViewModels"
+             xmlns:models="clr-namespace:SmartGarden_WorkInProgress.Models"
+             xmlns:controls="clr-namespace:SmartGarden_WorkInProgress.Controls"
+             xmlns:converters="clr-namespace:SmartGarden_WorkInProgress.Converters"
+             x:Class="SmartGarden_WorkInProgress.Views.PlantDetailPage"
+             x:DataType="viewmodels:PlantDetailViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <converters:LessThanToBoolConverter x:Key="LessThanToBoolConverter" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView>
+            <Grid RowDefinitions="420,*">
+                <!-- Hero Section with Gradient -->
+                <Grid Grid.Row="0" Background="{StaticResource GradientGreen}">
+                    <Grid RowDefinitions="Auto,*,Auto" Padding="20">
+                        <!-- Top Bar -->
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="16">
+                            <!-- Back Button -->
+                            <Frame Grid.Column="0"
+                                   Padding="8"
+                                   CornerRadius="20"
+                                   HasShadow="False"
+                                   BackgroundColor="#FFFFFF40"
+                                   BorderColor="Transparent">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BackCommand}" />
+                                </Frame.GestureRecognizers>
+                                <Label Text="arrow_back"
+                                       FontFamily="MaterialSymbols"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
+                            </Frame>
+
+                            <!-- Icons Right -->
+                            <Frame Grid.Column="2"
+                                   Padding="8"
+                                   CornerRadius="20"
+                                   HasShadow="False"
+                                   BackgroundColor="#FFFFFF40"
+                                   BorderColor="Transparent">
+                                <Label Text="water_drop"
+                                       FontFamily="MaterialSymbols"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
+                            </Frame>
+
+                            <Frame Grid.Column="3"
+                                   Padding="8"
+                                   CornerRadius="20"
+                                   HasShadow="False"
+                                   BackgroundColor="#FFFFFF40"
+                                   BorderColor="Transparent">
+                                <Label Text="eco"
+                                       FontFamily="MaterialSymbols"
+                                       FontSize="20"
+                                       TextColor="White"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
+                            </Frame>
+                        </Grid>
+
+                        <!-- Plant Image Placeholder -->
+                        <BoxView Grid.Row="1"
+                                 WidthRequest="180"
+                                 HeightRequest="180"
+                                 CornerRadius="90"
+                                 BackgroundColor="#FFFFFF40"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center" />
+
+                        <!-- Title Block -->
+                        <VerticalStackLayout Grid.Row="2" Spacing="8">
+                            <!-- Name & Weeks -->
+                            <HorizontalStackLayout Spacing="12">
+                                <Label Text="{Binding Plant.Species}"
+                                       FontSize="28"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center" />
+                                <Label FontSize="14"
+                                       TextColor="White"
+                                       Opacity="0.8"
+                                       VerticalOptions="Center">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} weeks">
+                                            <Binding Path="Plant.Weeks" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                            </HorizontalStackLayout>
+
+                            <!-- Inline Metrics -->
+                            <HorizontalStackLayout Spacing="20">
+                                <!-- Humidity -->
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="water_drop"
+                                           FontFamily="MaterialSymbols"
+                                           FontSize="16"
+                                           TextColor="White"
+                                           VerticalOptions="Center" />
+                                    <Label FontSize="14"
+                                           TextColor="White"
+                                           VerticalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}%">
+                                                <Binding Path="Plant.Humidity" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Label Text="Humidity"
+                                           FontSize="12"
+                                           TextColor="White"
+                                           Opacity="0.8"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <!-- Fertilizer -->
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="science"
+                                           FontFamily="MaterialSymbols"
+                                           FontSize="16"
+                                           TextColor="White"
+                                           VerticalOptions="Center" />
+                                    <Label FontSize="14"
+                                           TextColor="White"
+                                           VerticalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0}%">
+                                                <Binding Path="Plant.Fertilizer" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Label Text="Fertilizer"
+                                           FontSize="12"
+                                           TextColor="White"
+                                           Opacity="0.8"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <!-- Next Watering -->
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="timer"
+                                           FontFamily="MaterialSymbols"
+                                           FontSize="16"
+                                           TextColor="White"
+                                           VerticalOptions="Center" />
+                                    <Label FontSize="14"
+                                           TextColor="White"
+                                           VerticalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} min">
+                                                <Binding Path="Plant.NextWatering" Converter="{StaticResource TimeSpanToMinutesConverter}" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Label Text="Next watering"
+                                           FontSize="11"
+                                           TextColor="White"
+                                           Opacity="0.8"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+
+                <!-- Content Section -->
+                <VerticalStackLayout Grid.Row="1" Spacing="24" Padding="20" Margin="0,-40,0,0">
+                    <!-- Alert Panel -->
+                    <Frame Padding="20"
+                           CornerRadius="28"
+                           BackgroundColor="{StaticResource ColorSurface}"
+                           HasShadow="True"
+                           BorderColor="Transparent"
+                           IsVisible="{Binding Plant.WaterTank, Converter={StaticResource LessThanToBoolConverter}, ConverterParameter=15}">
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="warning"
+                                   FontFamily="MaterialSymbols"
+                                   FontSize="20"
+                                   TextColor="{StaticResource ColorDanger}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Please fill the water tank!"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorDanger}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Frame>
+
+                    <!-- Metrics Pills Grid -->
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="16" ColumnSpacing="16">
+                        <controls:MetricPill Grid.Row="0" Grid.Column="0"
+                                             BindingContext="{Binding Metrics[0]}"
+                                             Icon="{Binding Icon}"
+                                             Label="{Binding Label}"
+                                             Value="{Binding Value}"
+                                             Unit="{Binding Unit}"
+                                             Caption="{Binding Caption}" />
+
+                        <controls:MetricPill Grid.Row="0" Grid.Column="1"
+                                             BindingContext="{Binding Metrics[1]}"
+                                             Icon="{Binding Icon}"
+                                             Label="{Binding Label}"
+                                             Value="{Binding Value}"
+                                             Unit="{Binding Unit}"
+                                             Caption="{Binding Caption}" />
+
+                        <controls:MetricPill Grid.Row="1" Grid.Column="0"
+                                             BindingContext="{Binding Metrics[2]}"
+                                             Icon="{Binding Icon}"
+                                             Label="{Binding Label}"
+                                             Value="{Binding Value}"
+                                             Unit="{Binding Unit}"
+                                             Caption="{Binding Caption}" />
+
+                        <controls:MetricPill Grid.Row="1" Grid.Column="1"
+                                             BindingContext="{Binding Metrics[3]}"
+                                             Icon="{Binding Icon}"
+                                             Label="{Binding Label}"
+                                             Value="{Binding Value}"
+                                             Unit="{Binding Unit}"
+                                             Caption="{Binding Caption}" />
+                    </Grid>
+
+                    <!-- Automatic Watering -->
+                    <Frame Padding="20"
+                           CornerRadius="20"
+                           BackgroundColor="{StaticResource ColorSurfaceAlt}"
+                           HasShadow="False"
+                           BorderColor="Transparent">
+                        <controls:AutoWateringControl IsOn="{Binding IsAutoWateringOn}"
+                                                      Intensity="{Binding WateringIntensity}" />
+                    </Frame>
+
+                    <!-- Weekly Stats -->
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="Weekly Stats"
+                               Style="{StaticResource H2Style}" />
+                        <Frame Padding="20"
+                               CornerRadius="20"
+                               BackgroundColor="{StaticResource ColorSurface}"
+                               HasShadow="True"
+                               BorderColor="Transparent">
+                            <controls:WeeklyStatsChart Stats="{Binding WeeklyStats}" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
