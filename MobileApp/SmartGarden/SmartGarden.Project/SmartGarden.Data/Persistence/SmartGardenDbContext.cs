@@ -19,6 +19,7 @@ public class SmartGardenDbContext : DbContext
 
     // New DbSets for enhanced features
     public DbSet<Device> Devices => Set<Device>();
+    public DbSet<DeviceAuth> DeviceAuths => Set<DeviceAuth>();
     public DbSet<DeviceCommand> DeviceCommands => Set<DeviceCommand>();
     public DbSet<PlantThreshold> PlantThresholds => Set<PlantThreshold>();
     public DbSet<PlantHealth> PlantHealths => Set<PlantHealth>();
@@ -46,6 +47,7 @@ public class SmartGardenDbContext : DbContext
 
         // Configure new entities
         ConfigureAuditAndSoftDelete<Device>(modelBuilder);
+        ConfigureAuditAndSoftDelete<DeviceAuth>(modelBuilder);
         ConfigureAuditAndSoftDelete<DeviceCommand>(modelBuilder);
         ConfigureAuditAndSoftDelete<PlantThreshold>(modelBuilder);
         ConfigureAuditAndSoftDelete<PlantHealth>(modelBuilder);

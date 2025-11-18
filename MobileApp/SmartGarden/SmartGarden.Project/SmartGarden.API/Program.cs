@@ -55,16 +55,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// JWT Authentication Configuration
+// JWT Authentication Configuration (Dual Authentication: Users + Devices)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
+var userSecret = jwtSettings["UserSecret"] ?? throw new InvalidOperationException("JWT UserSecret not configured");
+var deviceSecret = jwtSettings["DeviceSecret"] ?? throw new InvalidOperationException("JWT DeviceSecret not configured");
+var issuer = jwtSettings["Issuer"] ?? "SmartGarden";
+var audience = jwtSettings["Audience"] ?? "SmartGarden";
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer("UserAuth", options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -72,14 +75,62 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(userSecret)),
         ClockSkew = TimeSpan.Zero
+    };
+})
+.AddJwtBearer("DeviceAuth", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(deviceSecret)),
+        ClockSkew = TimeSpan.FromMinutes(5) // Allow time drift for ESP32
     };
 });
 
-builder.Services.AddAuthorization();
+// Authorization Policies
+builder.Services.AddAuthorization(options =>
+{
+    // Default policy accepts both user and device tokens
+    options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .AddAuthenticationSchemes("UserAuth", "DeviceAuth")
+        .RequireAuthenticatedUser()
+        .Build();
+
+    // User-only policy
+    options.AddPolicy("UserOnly", policy =>
+    {
+        policy.AddAuthenticationSchemes("UserAuth");
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("type", "user");
+    });
+
+    // Device-only policy
+    options.AddPolicy("DeviceOnly", policy =>
+    {
+        policy.AddAuthenticationSchemes("DeviceAuth");
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("type", "device");
+    });
+
+    // User or Device policy
+    options.AddPolicy("UserOrDevice", policy =>
+    {
+        policy.AddAuthenticationSchemes("UserAuth", "DeviceAuth");
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("type", "user") ||
+            context.User.HasClaim("type", "device"));
+    });
+});
 
 // CORS Configuration
 var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -110,6 +161,7 @@ builder.Services.AddHttpClient<WateringService>();
 
 // New enhanced services
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IDeviceAuthService, DeviceAuthService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
 
