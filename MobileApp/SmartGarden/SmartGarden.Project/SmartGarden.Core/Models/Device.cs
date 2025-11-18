@@ -32,6 +32,9 @@ namespace SmartGarden.Core.Models
         // Navigation properties
         public User User { get; set; } = null!;
         public Plant? Plant { get; set; }
+        public DeviceAuth? DeviceAuth { get; set; }
         public ICollection<DeviceCommand> DeviceCommands { get; set; } = new List<DeviceCommand>();
+        public ICollection<SensorReading> SensorReadings { get; set; } = new List<SensorReading>();
+        public ICollection<Alert> Alerts { get; set; } = new List<Alert>();
     }
 }
