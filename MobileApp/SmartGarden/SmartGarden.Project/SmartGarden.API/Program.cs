@@ -164,6 +164,15 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDeviceAuthService, DeviceAuthService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
+// Email notification service
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Export service
+builder.Services.AddScoped<IExportService, ExportService>();
+
+// Background services
+builder.Services.AddHostedService<AlertMonitorService>();
+
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
