@@ -1,6 +1,0 @@
-@SmartGardenMVP_HostAddress = http://localhost:5249
-
-GET {{SmartGardenMVP_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

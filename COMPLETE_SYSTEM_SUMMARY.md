@@ -167,111 +167,65 @@ ESP32-WROOM-32 (Main controller)
 
 ---
 
-## 🚀 **Next Steps: React Native Mobile App**
+## ✅ **React Web Application (COMPLETE)**
 
-### What You Need to Build:
+### What Has Been Built:
 
-I've provided you with the complete backend and firmware. Now you need:
+The React web application is **fully functional** and provides all the features needed for plant monitoring and control.
 
-#### 1. **React Native App Structure**
+#### **Location:**
+`ReactNativeApp/SmartGardenApp/`
 
-Create with Expo:
-```bash
-npx create-expo-app SmartGardenApp --template typescript
-cd SmartGardenApp
-npm install @react-navigation/native @react-navigation/stack
-npm install axios @reduxjs/toolkit react-redux
-npm install expo-secure-store expo-crypto
-npm install react-native-chart-kit react-native-svg
-npm install @expo/vector-icons date-fns
-```
+#### **Features Implemented:**
 
-#### 2. **Core Files to Create:**
-
-```
-SmartGardenApp/
-├── src/
-│   ├── api/
-│   │   ├── client.ts              # Axios with JWT interceptor
-│   │   ├── authApi.ts             # Login/register
-│   │   ├── plantApi.ts            # Plant CRUD
-│   │   ├── deviceApi.ts           # Device approval
-│   │   └── sensorApi.ts           # Sensor data
-│   ├── components/
-│   │   ├── PlantCard.tsx
-│   │   ├── SensorChart.tsx
-│   │   └── DeviceApprovalCard.tsx
-│   ├── screens/
-│   │   ├── auth/
-│   │   │   ├── LoginScreen.tsx
-│   │   │   └── RegisterScreen.tsx
-│   │   ├── plants/
-│   │   │   ├── PlantsListScreen.tsx
-│   │   │   ├── PlantDetailScreen.tsx
-│   │   │   └── AddPlantScreen.tsx
-│   │   └── devices/
-│   │       ├── DevicesListScreen.tsx
-│   │       └── DeviceApprovalScreen.tsx
-│   ├── navigation/
-│   │   └── AppNavigator.tsx
-│   ├── store/
-│   │   ├── authSlice.ts
-│   │   └── store.ts
-│   └── utils/
-│       ├── secureStorage.ts
-│       └── constants.ts
-└── App.tsx
-```
-
-#### 3. **Key Features to Implement:**
-
-✅ User Login/Register (JWT storage in SecureStore)
-✅ Device Approval Flow (show pending devices from `/device-auth/pending`)
+✅ User Login/Register (JWT token management)
+✅ Device Approval Flow (show pending devices)
 ✅ Plant List with Real-time Sensor Data
-✅ Plant Detail with Sensor Charts (last 24h)
+✅ Plant Detail with Sensor Charts (weekly statistics)
 ✅ Manual Watering Button
-✅ Auto-Watering Toggle
-✅ Calibration Mode Wizard
-✅ Push Notifications for Alerts
+✅ Auto-Watering Toggle with frequency control
+✅ Sensor Calibration Wizard (12 steps)
+✅ Dashboard with plant health status
+✅ Real-time polling (60-second intervals)
+✅ Responsive design (works on mobile browsers)
 
-#### 4. **API Integration Example:**
+#### **Technology Stack:**
 
-I'll provide you with starter code for the API client. Create `src/api/client.ts`:
+- **React 18.2** - UI framework
+- **Vite 5.0** - Build tool (fast dev server)
+- **Tailwind CSS 3.3** - Styling
+- **Lucide React** - Icons
+- **Fetch API** - HTTP client with JWT interceptors
 
-```typescript
-import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+#### **Quick Start:**
 
-const API_BASE_URL = 'https://your-server:5000/api';
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-// Add JWT token to all requests
-apiClient.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('userToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Handle token refresh on 401
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      // Refresh token logic here
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default apiClient;
+```bash
+cd ReactNativeApp/SmartGardenApp
+npm install
+npm run dev
 ```
+
+Then open: `http://localhost:3000`
+
+#### **API Services:**
+
+The app includes complete API integration:
+- `authService.js` - Login, register, profile
+- `plantService.js` - Plant CRUD operations
+- `sensorService.js` - Sensor data & polling
+- `deviceService.js` - Device management & approval
+- `wateringService.js` - Manual/auto watering control
+- `apiClient.js` - HTTP client with JWT auto-refresh
+
+#### **Screens:**
+
+1. **LoginScreen** - User authentication
+2. **SignUpScreen** - User registration
+3. **CalibrationScreen** - Sensor calibration wizard
+4. **DashboardScreen** - Plant overview & management
+5. **PlantDetailScreen** - Real-time monitoring & control
+
+See [REACT_APP_INTEGRATION_SUMMARY.md](REACT_APP_INTEGRATION_SUMMARY.md) for complete documentation.
 
 ---
 
@@ -281,7 +235,7 @@ export default apiClient;
 
 ✅ **Device Management:**
 - Auto-register ESP32 devices on first boot
-- User approves devices via mobile app
+- User approves devices via web app
 - Track device online/offline status
 - Monitor device battery & signal strength
 - Rate limit device requests (prevents DoS)
