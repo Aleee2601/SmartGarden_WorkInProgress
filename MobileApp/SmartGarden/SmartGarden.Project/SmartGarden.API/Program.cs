@@ -164,6 +164,13 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDeviceAuthService, DeviceAuthService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
+// Plant Info Service (External API Integration)
+builder.Services.AddHttpClient<IPlantInfoService, PlantInfoService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "SmartGarden/1.0");
+});
+
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();

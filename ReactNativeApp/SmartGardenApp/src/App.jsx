@@ -8,6 +8,7 @@ import {
 // Import API services
 import { authService, plantService, sensorService, deviceService, wateringService } from './api';
 import ENV from './config/env';
+import AddPlantWizard from './components/AddPlantWizard';
 
 // Main App Component
 function App() {
@@ -713,6 +714,7 @@ function DashboardScreen({ user, onNavigate, onPlantSelect, onLogout, showMenu, 
   const [pendingDevices, setPendingDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAddPlantWizard, setShowAddPlantWizard] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -746,6 +748,11 @@ function DashboardScreen({ user, onNavigate, onPlantSelect, onLogout, showMenu, 
     } catch (err) {
       alert('Failed to approve device: ' + err.message);
     }
+  };
+
+  const handlePlantCreated = (newPlant) => {
+    // Refresh plants list after creating a new plant
+    fetchData();
   };
 
   const tips = [
@@ -863,12 +870,28 @@ function DashboardScreen({ user, onNavigate, onPlantSelect, onLogout, showMenu, 
       {!loading && !error && (
         <>
           <div className="p-6 space-y-4">
-            <h2 className="text-xl font-bold text-gray-800">My Plants</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-800">My Plants</h2>
+              <button
+                onClick={() => setShowAddPlantWizard(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="font-semibold">Add Plant</span>
+              </button>
+            </div>
 
             {plants.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Sprout className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p>No plants yet. Add your first plant!</p>
+                <p className="mb-4">No plants yet. Add your first plant!</p>
+                <button
+                  onClick={() => setShowAddPlantWizard(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all inline-flex items-center space-x-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Add Your First Plant</span>
+                </button>
               </div>
             ) : (
               plants.map((plant) => (
@@ -914,6 +937,14 @@ function DashboardScreen({ user, onNavigate, onPlantSelect, onLogout, showMenu, 
             </div>
           </div>
         </>
+      )}
+
+      {/* Add Plant Wizard */}
+      {showAddPlantWizard && (
+        <AddPlantWizard
+          onClose={() => setShowAddPlantWizard(false)}
+          onPlantCreated={handlePlantCreated}
+        />
       )}
     </div>
   );
