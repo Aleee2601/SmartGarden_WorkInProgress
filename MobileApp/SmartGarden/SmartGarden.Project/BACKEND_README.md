@@ -20,6 +20,7 @@ Complete .NET 8.0 REST API for IoT plant monitoring and automated watering syste
 ## ✨ Features
 
 ### Core Functionality
+- ✅ **Built with .NET 10** - Latest .NET framework with enhanced performance
 - ✅ **User Authentication** - JWT-based authentication with refresh tokens
 - ✅ **Device Management** - ESP32 device registration and approval workflow
 - ✅ **Plant Management** - Full CRUD operations for plants with species and soil types
@@ -49,7 +50,7 @@ Complete .NET 8.0 REST API for IoT plant monitoring and automated watering syste
 
 ### Prerequisites
 
-- **.NET 8.0 SDK** or higher ([Download](https://dotnet.microsoft.com/download))
+- **.NET 10.0 SDK** ([Download](https://dotnet.microsoft.com/download))
 - **SQL Server** (Express/LocalDB/Full) ([Download](https://www.microsoft.com/sql-server/sql-server-downloads))
 
 ### Option 1: Automated Setup (Recommended)
