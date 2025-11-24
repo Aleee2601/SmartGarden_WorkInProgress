@@ -204,17 +204,58 @@ class PlantService {
   }
 
   /**
-   * Search plants by name or species
+   * Search plants by name or species (local search)
    * @param {string} query
    * @returns {Promise<Array>}
    */
-  async searchPlants(query) {
+  async searchPlantsLocal(query) {
     try {
       const response = await apiClient.get(`${ENV.ENDPOINTS.PLANTS.GET_ALL}?search=${encodeURIComponent(query)}`);
       return response;
     } catch (error) {
       console.error('Search plants error:', error);
       throw new Error(error.message || 'Failed to search plants.');
+    }
+  }
+
+  /**
+   * 🌟 SMART SEARCH: Search for plant species in external database
+   * Returns plants with auto-suggested moisture thresholds
+   * @param {string} query - Search term (e.g., "basil", "tomato")
+   * @returns {Promise<Array>} Plant search results with smart defaults
+   */
+  async searchPlants(query) {
+    try {
+      const response = await apiClient.get(`${ENV.API.BASE_URL}/plant/search?q=${encodeURIComponent(query)}`);
+      return response;
+    } catch (error) {
+      console.error('Smart search error:', error);
+      throw new Error(error.message || 'Failed to search plants from database.');
+    }
+  }
+
+  /**
+   * 🌟 Create plant from smart search result
+   * Accepts pre-filled data with auto-suggested thresholds
+   * @param {Object} plantData - Plant data from search wizard
+   * @returns {Promise<Object>} Created plant
+   */
+  async createPlantFromSearch(plantData) {
+    try {
+      const response = await apiClient.post(`${ENV.API.BASE_URL}/plant/from-search`, {
+        nickname: plantData.nickname,
+        speciesName: plantData.speciesName,
+        imageUrl: plantData.imageUrl,
+        minMoistureThreshold: plantData.minMoistureThreshold,
+        roomName: plantData.roomName,
+        isOutdoor: plantData.isOutdoor || false,
+        deviceId: plantData.deviceId || null
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Create plant from search error:', error);
+      throw new Error(error.message || 'Failed to create plant.');
     }
   }
 }

@@ -18,6 +18,7 @@ namespace SmartGarden.Core.Models
         public string? RoomName { get; set; }
         public bool IsOutdoor { get; set; }
         public DateTime? DateAcquired { get; set; }
+        public DateTime? LastWateredDate { get; set; }
 
         // Navigation properties
         public User User { get; set; } = null!;
