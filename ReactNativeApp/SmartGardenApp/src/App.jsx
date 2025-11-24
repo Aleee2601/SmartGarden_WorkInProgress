@@ -6,9 +6,9 @@ import {
 } from 'lucide-react';
 
 // Import API services
-import { authService, plantService, sensorService, deviceService, wateringService } from './api';
+import { authService, plantService, sensorService, deviceService, wateringService, exportService } from './api';
 import ENV from './config/env';
-import AddPlantWizard from './components/AddPlantWizard';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 // Main App Component
 function App() {
@@ -121,6 +121,7 @@ function App() {
       <div className="w-full max-w-md">
         {renderScreen()}
       </div>
+      <PWAInstallPrompt />
     </div>
   );
 }
@@ -1017,6 +1018,22 @@ function PlantDetailScreen({ plant, onNavigate }) {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      await exportService.exportSensorDataCsv(plant.plantId);
+    } catch (error) {
+      alert('Failed to export CSV: ' + error.message);
+    }
+  };
+
+  const handleExportReport = async () => {
+    try {
+      await exportService.generatePlantReport(plant.plantId);
+    } catch (error) {
+      alert('Failed to generate report: ' + error.message);
+    }
+  };
+
   const sensorReadings = [
     { label: 'Water tank', value: sensorData?.waterLevel || 0, unit: '%', icon: Battery, warning: (sensorData?.waterLevel || 0) < 20 },
     { label: 'Light', value: sensorData?.lightLevel || 0, unit: 'lux', icon: Sun, warning: false },
@@ -1181,6 +1198,37 @@ function PlantDetailScreen({ plant, onNavigate }) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Data Export */}
+          <div className="p-6 space-y-4 border-t">
+            <h2 className="text-lg font-bold text-gray-800">Data Export</h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-sm font-semibold">Export CSV</span>
+              </button>
+
+              <button
+                onClick={handleExportReport}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-sm font-semibold">PDF Report</span>
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-500 text-center">
+              Export sensor data for analysis or generate a detailed PDF report
+            </p>
           </div>
 
           {/* Weekly Stats */}

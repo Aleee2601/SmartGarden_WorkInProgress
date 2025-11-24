@@ -165,20 +165,15 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDeviceAuthService, DeviceAuthService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
-// Plant Info Service (External API Integration)
-builder.Services.AddHttpClient<IPlantInfoService, PlantInfoService>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(30);
-    client.DefaultRequestHeaders.Add("User-Agent", "SmartGarden/1.0");
-});
+// Email notification service
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-// SignalR Configuration
-builder.Services.AddSignalR(options =>
-{
-    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
-    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-});
+// Export service
+builder.Services.AddScoped<IExportService, ExportService>();
+
+// Background services
+builder.Services.AddHostedService<AlertMonitorService>();
+
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
