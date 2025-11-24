@@ -50,4 +50,21 @@ namespace SmartGarden.Core.DTOs
         /// </summary>
         public int? NextCheckInSeconds { get; set; }
     }
+
+    /// <summary>
+    /// Real-time sensor update broadcast via SignalR
+    /// </summary>
+    public class PlantUpdateDto
+    {
+        public int PlantId { get; set; }
+        public string? PlantName { get; set; }
+        public double SoilMoisture { get; set; }
+        public double WaterLevel { get; set; }
+        public double? AirTemp { get; set; }
+        public double? AirHumidity { get; set; }
+        public double? LightLevel { get; set; }
+        public double? AirQuality { get; set; }
+        public DateTime Timestamp { get; set; }
+        public bool IsWatering { get; set; }
+    }
 }

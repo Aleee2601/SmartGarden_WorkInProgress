@@ -3,6 +3,7 @@ using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SmartGarden.API.Hubs;
 using SmartGarden.API.Services;
 using SmartGarden.Core.Interfaces;
 using SmartGarden.Data.Extensions;
@@ -171,6 +172,13 @@ builder.Services.AddHttpClient<IPlantInfoService, PlantInfoService>(client =>
     client.DefaultRequestHeaders.Add("User-Agent", "SmartGarden/1.0");
 });
 
+// SignalR Configuration
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+});
 
 // Background Services
 builder.Services.AddHostedService<AutoWateringBackgroundService>();
@@ -196,5 +204,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR Hub Mapping
+app.MapHub<PlantHub>("/hubs/plant");
 
 app.Run();

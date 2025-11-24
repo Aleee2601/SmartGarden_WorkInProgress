@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.API.Hubs;
 using SmartGarden.Core.DTOs;
 using SmartGarden.Core.Models;
 using SmartGarden.Core.Shared;
@@ -16,6 +18,7 @@ namespace SmartGarden.API.Controllers
     {
         private readonly SmartGardenDbContext _context;
         private readonly ILogger<TelemetryController> _logger;
+        private readonly IHubContext<PlantHub> _hubContext;
 
         // Configuration constants
         private const int DEFAULT_WATERING_DURATION_SEC = 5;
@@ -24,10 +27,12 @@ namespace SmartGarden.API.Controllers
 
         public TelemetryController(
             SmartGardenDbContext context,
-            ILogger<TelemetryController> logger)
+            ILogger<TelemetryController> logger,
+            IHubContext<PlantHub> hubContext)
         {
             _context = context;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -94,8 +99,8 @@ namespace SmartGarden.API.Controllers
                 var plant = device.Plant;
                 var plantId = plant.PlantId;
 
-                // 2. Record sensor reading to database
-                await RecordSensorReadingAsync(plantId, request);
+                // 2. Record sensor reading to database and broadcast via SignalR
+                await RecordSensorReadingAsync(plantId, request, plant.Nickname, false);
 
                 // 3. Get plant thresholds
                 var threshold = plant.PlantThresholds.FirstOrDefault(pt => pt.IsActive);
@@ -149,6 +154,9 @@ namespace SmartGarden.API.Controllers
                         "WATERING Plant {PlantId} for {Duration} seconds (WateringLog {WateringId})",
                         plantId, wateringDuration, wateringLog.WateringId);
 
+                    // Broadcast watering event via SignalR
+                    await BroadcastPlantUpdateAsync(plantId, request, plant.Nickname, true);
+
                     return Ok(new TelemetryResponseDto
                     {
                         Command = "WATER",
@@ -195,7 +203,8 @@ namespace SmartGarden.API.Controllers
         /// <summary>
         /// Records sensor reading to database using standard AddAsync
         /// </summary>
-        private async Task RecordSensorReadingAsync(int? plantId, TelemetryRequestDto request)
+        private async Task RecordSensorReadingAsync(int? plantId, TelemetryRequestDto request,
+            string? plantName, bool isWatering)
         {
             // Only record if plant is assigned
             if (plantId == null) return;
@@ -217,6 +226,38 @@ namespace SmartGarden.API.Controllers
 
             _logger.LogDebug("Recorded sensor reading {ReadingId} for Plant {PlantId}",
                 sensorReading.ReadingId, plantId);
+
+            // Broadcast real-time update via SignalR
+            await BroadcastPlantUpdateAsync(plantId.Value, request, plantName, isWatering);
+        }
+
+        /// <summary>
+        /// Broadcasts plant update to all connected SignalR clients
+        /// </summary>
+        private async Task BroadcastPlantUpdateAsync(int plantId, TelemetryRequestDto request,
+            string? plantName, bool isWatering)
+        {
+            var update = new PlantUpdateDto
+            {
+                PlantId = plantId,
+                PlantName = plantName,
+                SoilMoisture = request.SoilMoisture,
+                WaterLevel = request.TankLevel,
+                AirTemp = request.AirTemp,
+                AirHumidity = request.AirHumidity,
+                LightLevel = request.LightLevel,
+                AirQuality = request.AirQuality,
+                Timestamp = DateTime.UtcNow,
+                IsWatering = isWatering
+            };
+
+            // Broadcast to all clients (you can also use specific groups if needed)
+            await _hubContext.Clients.All.SendAsync("ReceiveUpdate", update);
+
+            // Alternative: Broadcast only to clients subscribed to this specific plant
+            // await _hubContext.Clients.Group($"Plant_{plantId}").SendAsync("ReceiveUpdate", update);
+
+            _logger.LogDebug("Broadcast plant update for Plant {PlantId} via SignalR", plantId);
         }
 
         /// <summary>
