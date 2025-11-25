@@ -1,24 +1,58 @@
-# 🌱 Bloomly - SmartGarden React Web App
+# 🌱 SmartGarden React Web App
 
-A modern, fully-integrated web application for the SmartGarden IoT plant monitoring system. Built with React, Vite, and Tailwind CSS, featuring real-time sensor data, device management, and automated watering controls.
+A modern, fully-integrated web application for the SmartGarden IoT plant monitoring system. Built with React 18, Vite, and Tailwind CSS, featuring **real-time SignalR updates**, **historical analytics**, **smart plant search**, and automated watering controls.
 
 ## ✨ Features
 
 ### 🔐 Authentication
-- User registration and login
-- JWT token-based authentication
+- User registration and login with JWT
 - Automatic token refresh
 - Secure session management
+- Device authentication for ESP32
 
-### 📱 Core Functionality
-- **Dashboard**: View all plants with real-time status
-- **Plant Management**: Add, edit, and delete plants
-- **Device Approval**: Approve new ESP32 devices
-- **Sensor Monitoring**: Real-time sensor data display
-- **Calibration**: Multi-sensor calibration wizard with countdown timers
-- **Auto-Watering**: Configure automatic watering schedules
-- **Manual Control**: Trigger manual watering
-- **Weekly Statistics**: Visual charts showing sensor trends
+### 📊 Real-Time Dashboard
+- **Live sensor updates** via SignalR WebSocket
+- View all plants with instant status changes
+- Automatic reconnection with exponential backoff
+- No polling required - push-based updates
+- Real-time watering status indicators
+
+### 🔍 Smart Plant Search
+- **40,000+ plant species** database (Perenual API)
+- Search by common name or scientific name
+- Get optimal care requirements
+- Suggested moisture thresholds
+- Sunlight and watering frequency recommendations
+- Debounced search (500ms) for better UX
+
+### 📈 Historical Analytics
+- **Interactive time-series charts** with Recharts
+- Hourly, daily, and weekly data aggregation
+- Multiple sensor metrics on one chart
+- Date range selector (7, 14, 30 days)
+- Toggle visibility of individual metrics
+- Min/Max/Avg statistics
+- Watering event overlays
+
+### 🌿 Plant Management
+- Add, edit, and delete plants
+- Auto-populated care instructions from search
+- Plant nickname and notes
+- Device association
+- Sensor calibration per plant
+
+### 🚰 Watering Control
+- **Intelligent auto-watering** based on soil moisture
+- Manual watering with configurable duration
+- Watering history and logs
+- Real-time watering status
+- Tank level monitoring
+
+### 📱 Device Management
+- ESP32 device approval workflow
+- Device status monitoring
+- Firmware version tracking
+- Multiple devices per user
 
 ### 🎨 UI/UX
 - Modern, responsive design
@@ -31,8 +65,9 @@ A modern, fully-integrated web application for the SmartGarden IoT plant monitor
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Backend API running (C# .NET SmartGarden.API)
+- **Node.js 18+** and npm
+- **Backend API** running (.NET 10 SmartGarden.API)
+- **SQL Server** database
 - ESP32 device (optional, for full functionality)
 
 ### Installation
@@ -50,7 +85,8 @@ A modern, fully-integrated web application for the SmartGarden IoT plant monitor
 
    Edit `.env` and set your API URL:
    ```env
-   REACT_APP_API_URL=https://localhost:5000/api
+   VITE_API_URL=https://localhost:5001/api
+   VITE_SIGNALR_HUB_URL=https://localhost:5001/hubs/plant
    ```
 
 3. **Start development server:**
@@ -58,7 +94,7 @@ A modern, fully-integrated web application for the SmartGarden IoT plant monitor
    npm run dev
    ```
 
-   The app will open at `http://localhost:3000`
+   The app will open at `http://localhost:5173`
 
 ### Production Build
 
@@ -66,6 +102,8 @@ A modern, fully-integrated web application for the SmartGarden IoT plant monitor
 npm run build
 npm run preview
 ```
+
+Build output goes to `dist/` directory.
 
 ## 📁 Project Structure
 
@@ -75,11 +113,17 @@ SmartGardenApp/
 │   ├── api/                    # API services
 │   │   ├── apiClient.js        # HTTP client with interceptors
 │   │   ├── authService.js      # Authentication API
-│   │   ├── plantService.js     # Plant CRUD operations
+│   │   ├── plantService.js     # Plant CRUD + search operations
+│   │   ├── analyticsService.js # Historical analytics API
 │   │   ├── sensorService.js    # Sensor data API
 │   │   ├── deviceService.js    # Device management API
 │   │   ├── wateringService.js  # Watering control API
 │   │   └── index.js            # Services export
+│   ├── components/             # React components
+│   │   ├── Dashboard.jsx       # Main dashboard with SignalR
+│   │   ├── PlantAnalytics.jsx  # Historical charts component
+│   │   ├── AddPlantWizard.jsx  # Plant search & add wizard
+│   │   └── ...                 # Other components
 │   ├── config/
 │   │   └── env.js              # Environment configuration
 │   ├── App.jsx                 # Main application component
@@ -100,24 +144,36 @@ Edit `src/config/env.js` to configure API endpoints:
 
 ```javascript
 const ENV = {
-  API_BASE_URL: 'https://localhost:5000/api',
-  ENDPOINTS: {
-    AUTH: { /* ... */ },
-    PLANTS: { /* ... */ },
-    SENSOR: { /* ... */ },
-    // ...
+  API: {
+    BASE_URL: import.meta.env.VITE_API_URL || 'https://localhost:5001/api',
+    TIMEOUT: 10000
+  },
+  SIGNALR: {
+    HUB_URL: import.meta.env.VITE_SIGNALR_HUB_URL || 'https://localhost:5001/hubs/plant',
+    RECONNECT_DELAYS: [1000, 2000, 5000, 10000, 30000]
+  },
+  PERENUAL: {
+    SEARCH_DEBOUNCE_MS: 500
   }
 };
 ```
 
-### Sensor Configuration
+### Dependencies
 
-Adjust sensor polling intervals and calibration settings:
-
-```javascript
-SENSORS: {
-  READING_INTERVAL: 15 * 60 * 1000,  // 15 minutes
-  CALIBRATION_COUNTDOWN: 10,          // seconds
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@microsoft/signalr": "^8.0.0",
+    "recharts": "^2.10.0",
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "tailwindcss": "^3.3.0",
+    "@vitejs/plugin-react": "^4.2.0"
+  }
 }
 ```
 
@@ -129,22 +185,74 @@ SENSORS: {
    - Click "Create new account" on login screen
    - Enter username, email, and password
    - Complete account creation
-   - Proceed to sensor calibration (optional)
+   - Redirect to dashboard
 
 2. **Login:**
    - Enter registered email and password
    - Click "Login" to access dashboard
 
-### Plant Management
+### Adding Plants with Smart Search
 
-1. **View Plants:**
-   - Dashboard displays all your plants
-   - Click on a plant card to view details
+1. **Open Add Plant Wizard:**
+   - Click "Add Plant" button on dashboard
+   - Search wizard appears
 
-2. **Plant Details:**
-   - View real-time sensor readings
-   - Monitor water tank, light, temperature, soil moisture
-   - View weekly statistics chart
+2. **Search for Plant:**
+   - Type plant name (e.g., "Monstera" or "Aloe Vera")
+   - Results appear after 500ms delay
+   - Click on a plant to select it
+
+3. **Review Care Instructions:**
+   - View suggested moisture threshold
+   - Check sunlight requirements
+   - Review watering frequency
+   - Read care notes
+
+4. **Complete Addition:**
+   - Enter plant nickname
+   - Add personal notes (optional)
+   - Associate with ESP32 device
+   - Click "Add Plant"
+
+### Real-Time Monitoring
+
+1. **Dashboard View:**
+   - All plants displayed as cards
+   - Real-time sensor readings update automatically
+   - Watering status shows live
+   - No page refresh needed
+
+2. **SignalR Connection:**
+   - Automatic connection on dashboard load
+   - Status indicator shows connection health
+   - Auto-reconnect if connection drops
+   - Green indicator = Connected
+   - Yellow indicator = Reconnecting
+   - Red indicator = Disconnected
+
+### Historical Analytics
+
+1. **View Plant History:**
+   - Click on plant card
+   - Navigate to "Analytics" tab
+   - Charts load automatically
+
+2. **Interact with Charts:**
+   - Select date range (7, 14, or 30 days)
+   - Toggle metrics on/off:
+     - Soil Moisture (%)
+     - Air Temperature (°C)
+     - Air Humidity (%)
+     - Light Level (lux)
+     - Air Quality (%)
+   - Hover for detailed tooltips
+   - View watering events as markers
+
+3. **View Statistics:**
+   - Current values for all metrics
+   - Min/Max/Average calculations
+   - Watering frequency
+   - Last watered timestamp
 
 ### Device Approval
 
@@ -162,7 +270,7 @@ SENSORS: {
 
 1. **Access Calibration:**
    - Menu → "Calibrate sensors"
-   - Or automatically after signup
+   - Select plant to calibrate
 
 2. **Calibration Process:**
    - Select sensor type (Light, Soil, Water, Temperature)
@@ -182,14 +290,94 @@ SENSORS: {
 1. **Manual Watering:**
    - Go to Plant Detail screen
    - Click "Water Now" button
-   - 30-second watering cycle starts
+   - Watch real-time watering status update
 
 2. **Automatic Watering:**
-   - Toggle "Auto Mode" ON/OFF
-   - Adjust watering frequency (1-5 dots)
-   - System waters automatically based on soil moisture
+   - ESP32 automatically checks soil moisture
+   - Waters when below threshold
+   - Updates broadcast to all connected clients
 
 ## 🌐 API Integration
+
+### SignalR Real-Time Updates
+
+```javascript
+import * as signalR from '@microsoft/signalr';
+
+// Create connection
+const connection = new signalR.HubConnectionBuilder()
+  .withUrl(`${ENV.SIGNALR.HUB_URL}`, {
+    transport: signalR.HttpTransportType.WebSockets |
+               signalR.HttpTransportType.ServerSentEvents,
+    withCredentials: true
+  })
+  .withAutomaticReconnect({
+    nextRetryDelayInMilliseconds: (retryContext) => {
+      return Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000);
+    }
+  })
+  .build();
+
+// Listen for updates
+connection.on('ReceiveUpdate', (update) => {
+  console.log('Plant update:', update);
+  // Update UI with new sensor data
+});
+
+// Start connection
+await connection.start();
+```
+
+### Plant Search with Perenual API
+
+```javascript
+import { plantService } from './api';
+
+// Debounced search
+const searchPlants = async (query) => {
+  if (!query || query.length < 2) return [];
+
+  const results = await plantService.searchPlants(query);
+  return results;
+};
+
+// Usage in component with debouncing
+const [searchTerm, setSearchTerm] = useState('');
+const [results, setResults] = useState([]);
+
+useEffect(() => {
+  const timer = setTimeout(async () => {
+    if (searchTerm) {
+      const data = await searchPlants(searchTerm);
+      setResults(data);
+    }
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [searchTerm]);
+```
+
+### Historical Analytics
+
+```javascript
+import { analyticsService } from './api';
+
+// Get historical data
+const startDate = new Date();
+startDate.setDate(startDate.getDate() - 7);
+const endDate = new Date();
+
+const data = await analyticsService.getHistoricalData(
+  plantId,
+  startDate,
+  endDate,
+  'hourly' // or 'daily', 'weekly'
+);
+
+// Get plant statistics
+const stats = await analyticsService.getPlantSummary(plantId);
+console.log('Avg soil moisture:', stats.averageSoilMoisture);
+```
 
 ### Authentication Flow
 
@@ -215,30 +403,8 @@ import { sensorService } from './api';
 // Get latest reading
 const data = await sensorService.getLatestReading(plantId);
 
-// Start real-time polling
-const stopPolling = sensorService.startPolling(plantId, (data) => {
-  console.log('New sensor data:', data);
-}, 60000); // Poll every 60 seconds
-
-// Stop polling
-stopPolling();
-```
-
-### Watering Control
-
-```javascript
-import { wateringService } from './api';
-
-// Manual watering
-await wateringService.waterManually(plantId, 30); // 30 seconds
-
-// Configure auto-watering
-await wateringService.configureAutoWatering(plantId, {
-  enabled: true,
-  duration: 30,
-  minSoilMoisture: 30,
-  intensity: 3
-});
+// Get historical readings
+const history = await sensorService.getHistory(plantId, 24); // last 24 hours
 ```
 
 ## 🛠️ Development
@@ -257,13 +423,15 @@ npm run format
 
 ### Technology Stack
 
-- **React 18.2** - UI framework
-- **Vite 5.0** - Build tool & dev server
-- **Tailwind CSS 3.3** - Utility-first CSS
-- **Lucide React** - Icon library
+- **React 18.2** - UI framework with hooks
+- **Vite 5.0** - Lightning-fast build tool
+- **Tailwind CSS 3.3** - Utility-first CSS framework
+- **@microsoft/signalr 8.0** - Real-time WebSocket communication
+- **Recharts 2.10** - Composable charting library
+- **Lucide React** - Beautiful icon library
 - **Fetch API** - HTTP client
 
-## 📊 Features Breakdown
+## 📊 Component Architecture
 
 ### Component Hierarchy
 
@@ -271,25 +439,46 @@ npm run format
 App
 ├── LoginScreen
 ├── SignUpScreen
-├── CalibrationScreen
-│   └── CalibrationModal
-├── DashboardScreen
+├── Dashboard (with SignalR)
 │   ├── Header
 │   ├── MenuSidebar
-│   ├── PlantList
-│   └── TipsSection
+│   ├── PlantCardList
+│   │   └── PlantCard (real-time updates)
+│   └── AddPlantWizard
+│       ├── PlantSearch
+│       └── PlantForm
 └── PlantDetailScreen
     ├── SensorReadings
+    ├── PlantAnalytics (Recharts)
+    │   ├── DateRangeSelector
+    │   ├── MetricToggles
+    │   ├── TimeSeriesChart
+    │   └── StatisticsCards
     ├── AutoWateringControls
-    └── WeeklyStatisticsChart
+    └── DeviceInfo
 ```
 
 ### State Management
 
-- Local component state with React hooks
-- JWT tokens in localStorage
-- API client singleton with automatic token management
-- Real-time sensor data polling
+- **Local component state** with React hooks
+- **SignalR connection** managed in Dashboard
+- **JWT tokens** in localStorage
+- **API client singleton** with automatic token management
+- **Real-time updates** via SignalR push events
+
+### Real-Time Data Flow
+
+```
+ESP32 Device
+    ↓ (POST /api/telemetry)
+TelemetryController
+    ↓ (SignalR broadcast)
+PlantHub (/hubs/plant)
+    ↓ (WebSocket push)
+Dashboard Component
+    ↓ (State update)
+PlantCard Re-renders
+```
 
 ### Error Handling
 
@@ -297,6 +486,8 @@ App
 - Automatic retry for failed requests
 - Token refresh on 401 errors
 - Network timeout handling (10 seconds)
+- SignalR reconnection with exponential backoff
+- Graceful degradation when WebSocket unavailable
 
 ## 🔒 Security
 
@@ -306,6 +497,7 @@ App
 - **CORS Protection:** Configured in backend
 - **Input Validation:** Client-side validation
 - **XSS Protection:** React's built-in escaping
+- **SignalR Authentication:** Credentials passed with connection
 
 ## 🐛 Troubleshooting
 
@@ -314,9 +506,41 @@ App
 **Problem:** "Request timeout" or "Failed to fetch"
 
 **Solution:**
-1. Ensure backend API is running (`dotnet run` in SmartGarden.API)
+1. Ensure backend API is running
 2. Check API URL in `.env` matches backend address
-3. Verify CORS is configured for `http://localhost:3000`
+3. Verify CORS is configured for `http://localhost:5173`
+4. Check firewall allows HTTPS connections
+
+### SignalR Not Connecting
+
+**Problem:** Real-time updates not working
+
+**Solution:**
+1. Verify SignalR hub URL is correct
+2. Check backend has SignalR configured
+3. Ensure WebSocket is not blocked by firewall/proxy
+4. Check browser console for connection errors
+5. Verify CORS allows SignalR connections
+
+### Plant Search Not Working
+
+**Problem:** No results when searching
+
+**Solution:**
+1. Check Perenual API key is configured in backend
+2. Verify API key has not exceeded rate limit
+3. Check network tab for API call errors
+4. Ensure search term is at least 2 characters
+
+### Analytics Not Loading
+
+**Problem:** Charts don't display data
+
+**Solution:**
+1. Verify plant has sensor readings in database
+2. Check date range includes data
+3. Ensure analyticsService API calls succeed
+4. Check browser console for Recharts errors
 
 ### Login Fails
 
@@ -325,32 +549,14 @@ App
 **Solution:**
 1. Verify user credentials are correct
 2. Check backend database has users table
-3. Ensure UserSecret is set in backend appsettings.json
-
-### Sensor Data Not Updating
-
-**Problem:** Sensor readings show 0 or outdated values
-
-**Solution:**
-1. Verify ESP32 device is approved
-2. Check device is online and sending data
-3. Ensure plant has associated device
-4. Check backend logs for sensor API errors
-
-### Calibration Not Saving
-
-**Problem:** Calibration data doesn't persist
-
-**Solution:**
-1. Ensure plant is selected before calibration
-2. Check backend calibration API endpoint
-3. Verify user has permission to update plant
+3. Ensure JWT secret is set in backend configuration
+4. Check backend logs for authentication errors
 
 ## 📝 API Documentation
 
 ### Base URL
 ```
-https://localhost:5000/api
+https://localhost:5001/api
 ```
 
 ### Key Endpoints
@@ -358,29 +564,87 @@ https://localhost:5000/api
 #### Authentication
 - `POST /auth/login` - User login
 - `POST /auth/register` - User registration
-- `POST /auth/refresh-token` - Refresh JWT token
-- `GET /auth/profile` - Get current user
+- `POST /auth/device/register` - Device registration
+- `POST /auth/device/login` - Device authentication
 
 #### Plants
-- `GET /plants` - Get all plants
+- `GET /plants` - Get all user plants
 - `GET /plants/{id}` - Get plant by ID
 - `POST /plants` - Create new plant
 - `PUT /plants/{id}` - Update plant
 - `DELETE /plants/{id}` - Delete plant
-- `PUT /plants/{id}/calibration` - Update calibration
+- `GET /plants/search?q=monstera` - Search plants (Perenual)
+- `GET /plants/search/{id}/details` - Get plant details
+
+#### Telemetry
+- `POST /telemetry` - Submit sensor readings (ESP32)
+
+#### Analytics
+- `GET /analytics/plant/{id}/historical` - Time-series data
+- `GET /analytics/plant/{id}/summary` - Plant statistics
 
 #### Sensors
 - `GET /sensor/plant/{plantId}/latest` - Latest reading
-- `GET /sensor/plant/{plantId}/history?hours=24` - History
-- `GET /sensor/plant/{plantId}/statistics?days=7` - Statistics
-
-#### Devices
-- `GET /device-auth/pending` - Pending devices
-- `POST /device-auth/approve` - Approve device
+- `GET /sensor/plant/{plantId}/history` - Historical readings
 
 #### Watering
 - `POST /watering/manual` - Manual watering
-- `PUT /watering/plant/{plantId}/auto` - Configure auto-watering
+- `GET /watering/plant/{plantId}/logs` - Watering history
+
+### SignalR Hub
+
+**Hub URL:** `https://localhost:5001/hubs/plant`
+
+**Events:**
+- `ReceiveUpdate` - Broadcast when sensor data received
+- `WateringStarted` - Broadcast when watering begins
+- `WateringCompleted` - Broadcast when watering ends
+
+## 🚀 Performance Optimization
+
+### Code Splitting
+
+```javascript
+// Lazy load analytics component
+const PlantAnalytics = React.lazy(() => import('./components/PlantAnalytics'));
+```
+
+### Debouncing
+
+```javascript
+// Search debounce to prevent excessive API calls
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+```
+
+### SignalR Optimization
+
+```javascript
+// Only subscribe to updates when dashboard is active
+useEffect(() => {
+  if (isActive) {
+    connection.start();
+  }
+  return () => connection.stop();
+}, [isActive]);
+```
+
+## 🎓 For Thesis/Academic Use
+
+This project demonstrates:
+- **Full-stack IoT architecture** with React frontend
+- **Real-time communication** using SignalR WebSocket
+- **Data visualization** with interactive charts
+- **RESTful API integration** with proper error handling
+- **Modern React patterns** (hooks, context, lazy loading)
+- **Production-ready code** structure
+- **Secure authentication** with JWT
+- **Responsive design** with TailwindCSS
 
 ## 🤝 Contributing
 
@@ -402,16 +666,17 @@ For issues or questions:
 - Review browser console for client errors
 - Verify network requests in browser DevTools
 
-## 🎓 For Thesis/Academic Use
+## Related Documentation
 
-This project demonstrates:
-- Full-stack IoT architecture
-- Secure device authentication
-- Real-time data visualization
-- RESTful API design
-- Modern web development practices
-- Production-ready code structure
+- [Main Project Documentation](../../PROJECT_DOCUMENTATION.md)
+- [API Reference](../../API_REFERENCE.md)
+- [Backend API README](../../MobileApp/SmartGarden/SmartGarden.Project/SmartGarden.API/README.md)
+- [User Guide](../../USER_GUIDE.md)
 
 ---
 
 **Built with ❤️ for plant lovers and IoT enthusiasts**
+
+**Version:** 2.0
+**Last Updated:** November 2025
+**Framework:** React 18 + Vite 5
