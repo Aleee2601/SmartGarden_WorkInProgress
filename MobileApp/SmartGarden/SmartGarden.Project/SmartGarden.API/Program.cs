@@ -3,6 +3,7 @@ using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SmartGarden.API.Hubs;
 using SmartGarden.API.Services;
 using SmartGarden.Core.Interfaces;
 using SmartGarden.Data.Extensions;
@@ -198,5 +199,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR Hub Mapping
+app.MapHub<PlantHub>("/hubs/plant");
 
 app.Run();
